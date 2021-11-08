@@ -1,0 +1,3 @@
+port = 1883
+dumpfile = dumpfile.txt
+logfile = file.log
