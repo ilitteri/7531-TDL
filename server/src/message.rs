@@ -31,8 +31,8 @@ impl From<Message> for u8 {
     }
 }
 
-pub fn read_message(stream: &mut TcpStream, buffer: u8, message_type: Message) -> Result<(), std::io::Error> {
-    let mut buffer_packet: Vec<u8> = vec![0; buffer as usize];
+pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message) -> Result<(), std::io::Error> {
+    let mut buffer_packet: Vec<u8> = vec![0; size as usize];
     stream.read_exact(&mut buffer_packet);
     match message_type {
         Message::Log => {

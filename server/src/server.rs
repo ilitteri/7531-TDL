@@ -55,37 +55,9 @@ fn read_packet_from_client(stream: &mut TcpStream) {
                 read_message(stream, num_buffer[1], message_type);
             }
             Err(_) => {
-                println!("Error al leer!");
+                println!("El cliente se desconecto y cerro el stream.");
                 break;
             }
         }
     }
 }
-
-// thread::spawn(move || loop {
-//     let mut buff = vec![0; MSG_SIZE];
-//     match client.read_exact(&mut buff) {
-//         Ok(_) => {
-//             let msg = buff.into_iter().take_while(|&x| x != 0).collect::<Vec<_>>();
-//             println!("message recv {:?}", msg);
-//         },
-//         Err(ref err) if err.kind() == ErrorKind::WouldBlock => (),
-//         Err(_) => {
-//             println!("connection with server was severed");
-//             break;
-//         }
-//     }
-//
-//     match rx.try_recv() {
-//         Ok(msg) => {
-//             let mut buff = msg.clone().into_bytes();
-//             buff.resize(MSG_SIZE, 0);
-//             client.write_all(&buff).expect("writing to socket failed");
-//             println!("message sent {:?}", msg);
-//         },
-//         Err(TryRecvError::Empty) => (),
-//         Err(TryRecvError::Disconnected) => break
-//     }
-//
-//     thread::sleep(Duration::from_millis(100));
-// });
