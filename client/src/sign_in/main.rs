@@ -37,7 +37,7 @@ fn main() {
         .read_line(&mut birth_date)
         .expect("Failed to read line");
     
-    println!("Ingresa:");
+    println!("Ingresa tu DNI:");
     io::stdin()
         .read_line(&mut dni)
         .expect("Failed to read line");
