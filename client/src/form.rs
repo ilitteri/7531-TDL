@@ -1,10 +1,7 @@
 use std::io;
-
-mod client_account;
 use crate::client_account::ClientAccount;
 
-
-fn main() {
+pub fn ask_for_form() -> ClientAccount {
     let mut name = String::new();
     let mut lastname = String::new();
     let mut email = String::new();
@@ -36,12 +33,12 @@ fn main() {
     io::stdin()
         .read_line(&mut birth_date)
         .expect("Failed to read line");
-    
+
     println!("Ingresa tu DNI:");
     io::stdin()
         .read_line(&mut dni)
         .expect("Failed to read line");
-    
+
     let client_account = ClientAccount::new(
         name.trim(),
         lastname.trim(),
@@ -51,10 +48,13 @@ fn main() {
         dni.trim(),
     );
 
-    println!("Nombre: {}", client_account.name);
-    println!("Apellido: {}", client_account.lastname);
-    println!("Email: {}", client_account.email);
-    println!("Contraseña: {}", client_account.name);
-    println!("Fecha de nacimiento: {}", client_account.name);
-    println!("DNI: {}", client_account.name);
+    println!("Tus datos son estos:");
+    println!("Nombre: {}", client_account.name.clone().unwrap());
+    println!("Apellido: {}", client_account.lastname.clone().unwrap());
+    println!("Email: {}", client_account.email.clone().unwrap());
+    println!("Contraseña: {}", client_account.name.clone().unwrap());
+    println!("Fecha de nacimiento: {}", client_account.name.clone().unwrap());
+    println!("DNI: {}", client_account.name.clone().unwrap());
+
+    return client_account;
 }

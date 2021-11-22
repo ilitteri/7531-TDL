@@ -22,7 +22,7 @@ impl Server {
     pub fn run(&self) -> std::io::Result<()> {
         let address = self.cfg.get_address();
         println!("IP: {}", &address);
-        Server::wait_new_clients(&address);
+        let _aux = Server::wait_new_clients(&address); //Manejar
         Ok(())
     }
 
@@ -41,7 +41,7 @@ impl Server {
     }
 }
 
-fn handle_client(id :usize, stream: &mut TcpStream) {
+fn handle_client(_id :usize, stream: &mut TcpStream) {
     let mut stream_cloned = stream.try_clone().unwrap();
     read_packet_from_client(&mut stream_cloned);
 }
