@@ -28,7 +28,7 @@ fn client_run(address: &str) -> std::io::Result<()> {
     send_log(&mut stream);
     println!("Envie mi log!");
 
-    thread::sleep(Duration::from_millis(100)); //Sino no termino de recibir y  me desconecto
+    thread::sleep(Duration::from_millis(100)); //Sino, no termino de recibir y  me desconecto
 
     send_disconnect(&mut stream);
     println!("Me desconecte!");
