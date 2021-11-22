@@ -10,3 +10,7 @@ edition = "2018"
 [[bin]]
 name = "cliente"
 path = "src/main.rs"
+
+[[bin]]
+name = "sign"
+path = "src/sign_in/main.rs"
