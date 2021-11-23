@@ -1,16 +1,23 @@
 use std::io;
 
 pub struct AccountCredentials {
-    pub dni: String,
-    pub password: String
+    pub dni: Option<String>,
+    pub password: Option<String>
 }
 
 impl AccountCredentials {
     pub fn new(dni: &str ,password: &str) -> Self {
         AccountCredentials {
-            dni: dni.to_string(),
-            password: password.to_string()
+            dni: Some(dni.to_string()),
+            password: Some(password.to_string())
         }
+    }
+    pub fn get_dni(&self) -> Option<String> {
+        return self.dni.clone();
+    }
+
+    pub fn get_password(&self) -> Option<String> {
+        return self.password.clone();
     }
 }
 
@@ -34,8 +41,8 @@ pub fn ask_for_log() -> AccountCredentials{
         password.trim(),
     );
     println!("Tus datos son estos:");
-    println!("DNI: {}", client_account.dni);
-    println!("Contraseña: {}", client_account.password);
+    println!("DNI: {}", client_account.dni.clone().unwrap());
+    println!("Contraseña: {}", client_account.password.clone().unwrap());
 
     return client_account;
 }
