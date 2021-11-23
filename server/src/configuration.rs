@@ -72,8 +72,4 @@ impl Configuration {
     pub fn get_address(&self) -> String {
         format!("{}:{}", self.ip, self.port)
     }
-
-    pub fn get_log_file(&self) -> String {
-        self.logfile.to_string()
-    }
 }

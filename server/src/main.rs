@@ -3,6 +3,9 @@ use crate::server::Server;
 
 mod server;
 mod configuration;
+mod message;
+
+static SERVER_ARGS: usize = 2;
 
 fn main() -> Result<(), ()> {
     let argv = args().collect::<Vec<String>>();
