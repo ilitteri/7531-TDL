@@ -47,8 +47,8 @@ fn client_run(address: &str) -> std::io::Result<()> {
 
         match option_int {
             OPCION_LOG => {
-                let _log = ask_for_log();
-                send_log(&mut stream);
+                let log = ask_for_log();
+                send_log(&mut stream, &log);
                 println!("Envie mi log!");
             }
             OPCION_REGISTER => {

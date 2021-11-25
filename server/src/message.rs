@@ -42,52 +42,73 @@ fn bytes2string(bytes: &[u8]) -> Result<String, u8> {
 fn leer_contenido_formulario(buffer_packet: Vec<u8>) -> Result<u8, u8> {
     let mut indice = 0 as usize;
     let mut dni : Option<String> = None;
-    let tamanio_dni: usize = ((buffer_packet[indice] as usize) << 8) + buffer_packet[(indice+1) as usize] as usize;
-    indice += 2 as usize;
+    let tamanio_dni: usize = buffer_packet[(indice) as usize] as usize;
+    indice += 1 as usize;
     dni = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_dni)])?);
     indice += tamanio_dni;
 
     println!("El Dni es -> {}", dni.unwrap());
 
     let mut password : Option<String> = None;
-    let tamanio_password: usize = ((buffer_packet[indice] as usize) << 8) + buffer_packet[(indice+1) as usize] as usize;
-    indice += 2 as usize;
+    let tamanio_password: usize = buffer_packet[(indice) as usize] as usize;
+    indice += 1 as usize;
     password = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_password)])?);
     indice += tamanio_password;
 
     println!("El password es -> {}", password.unwrap());
 
     let mut lastname : Option<String> = None;
-    let tamanio_lastname: usize = ((buffer_packet[indice] as usize) << 8) + buffer_packet[(indice+1) as usize] as usize;
-    indice += 2 as usize;
+    let tamanio_lastname: usize = buffer_packet[(indice) as usize] as usize;
+    indice += 1 as usize;
     lastname = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_lastname)])?);
     indice += tamanio_lastname;
 
     println!("El lastname es -> {}", lastname.unwrap());
 
     let mut name : Option<String> = None;
-    let tamanio_name: usize = ((buffer_packet[indice] as usize) << 8) + buffer_packet[(indice+1) as usize] as usize;
-    indice += 2 as usize;
+    let tamanio_name: usize = buffer_packet[(indice) as usize] as usize;
+    indice += 1 as usize;
     name = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_name)])?);
     indice += tamanio_name;
 
     println!("El name es -> {}", name.unwrap());
 
     let mut birth_date : Option<String> = None;
-    let tamanio_birth_date: usize = ((buffer_packet[indice] as usize) << 8) + buffer_packet[(indice+1) as usize] as usize;
-    indice += 2 as usize;
+    let tamanio_birth_date: usize = buffer_packet[(indice) as usize] as usize;
+    indice += 1 as usize;
     birth_date = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_birth_date)])?);
     indice += tamanio_birth_date;
 
     println!("El birth_date es -> {}", birth_date.unwrap());
 
     let mut email : Option<String> = None;
-    let tamanio_email: usize = ((buffer_packet[indice] as usize) << 8) + buffer_packet[(indice+1) as usize] as usize;
-    indice += 2 as usize;
+    let tamanio_email: usize = buffer_packet[(indice) as usize] as usize;
+    indice += 1 as usize;
     email = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_email)])?);
     indice += tamanio_email;
 
     println!("El email es -> {}", email.unwrap());
+
+    Ok(1)
+}
+
+fn leer_contenido_log(buffer_packet: Vec<u8>) -> Result<u8, u8> {
+    let mut indice = 0 as usize;
+    let mut dni : Option<String> = None;
+    let tamanio_dni: usize = buffer_packet[(indice) as usize] as usize;
+    indice += 1 as usize;
+    dni = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_dni)])?);
+    indice += tamanio_dni;
+
+    println!("El Dni es -> {}", dni.unwrap());
+
+    let mut password : Option<String> = None;
+    let tamanio_password: usize = buffer_packet[(indice) as usize] as usize;
+    indice += 1 as usize;
+    password = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_password)])?);
+    indice += tamanio_password;
+
+    println!("El password es -> {}", password.unwrap());
 
     Ok(1)
 }
@@ -98,7 +119,7 @@ pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message) -> 
     match message_type {
         Message::Log => {
             println!("Recibi un intento de log!");
-
+            let _aux1 = leer_contenido_log(buffer_packet); // Manejar
         }
         Message::Form => {
             println!("Recibi un formulario!");
