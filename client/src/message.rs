@@ -45,6 +45,8 @@ fn calculate_lenght(form :&ClientAccount) -> u8 {
     lenght += (form.get_password().unwrap().len() + 1) as u8;
     lenght += (form.get_email().unwrap().len() + 1) as u8;
     lenght += (form.get_name().unwrap().len() + 1) as u8;
+    lenght += (form.get_priority().unwrap().len() + 1) as u8;
+    
     return lenght;
 }
 
@@ -96,6 +98,14 @@ pub fn send_register(stream: &mut TcpStream, form :&ClientAccount) {
     for i in 0..email_bytes.len(){
         buffer_envio.push(email_bytes[i]);
     }
+
+    buffer_envio.push(form.get_priority().unwrap().len() as u8);
+    let priority = form.get_priority().unwrap();
+    let priority_bytes = priority.as_bytes();
+    for i in 0..priority_bytes.len(){
+        buffer_envio.push(priority_bytes[i]);
+    }
+
     stream.write(&buffer_envio).unwrap();
 }
 

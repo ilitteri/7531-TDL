@@ -1,8 +1,8 @@
 use std::io;
 use crate::client_account::ClientAccount;
 
-const YES:char = 'Y';
-const NO:char = 'N';
+const YES:&str = "y";
+const NO:&str = "n";
 const RISK_AGE:i32 = 60;
 const HIGH_PRIORITY:i32=1;
 const MIDDLE_PRIORITY:i32=2;
@@ -46,7 +46,7 @@ pub fn ask_for_form() -> ClientAccount {
         .read_line(&mut dni)
         .expect("Failed to read line");
 
-    let mut priority = ask_for_priority();
+    let priority = ask_for_priority();
 
     let client_account = ClientAccount::new(
         name.trim(),
@@ -55,6 +55,7 @@ pub fn ask_for_form() -> ClientAccount {
         password.trim(),
         birth_date.trim(),
         dni.trim(),
+        priority.trim(),
     );
 
     println!("Tus datos son estos:");
@@ -64,6 +65,7 @@ pub fn ask_for_form() -> ClientAccount {
     println!("Contraseña: {}", client_account.name.clone().unwrap());
     println!("Fecha de nacimiento: {}", client_account.name.clone().unwrap());
     println!("DNI: {}", client_account.name.clone().unwrap());
+    println!("Prioridad de turno: {}", client_account.priority.clone().unwrap());
 
     return client_account;
 }
@@ -71,7 +73,6 @@ pub fn ask_for_form() -> ClientAccount {
 
 pub fn ask_for_priority() -> String {
     let mut option_str = String::new();
-    let mut has_pathologies = 'A';
 
     println!("Ingrese su edad: ");
     io::stdin()
@@ -80,26 +81,35 @@ pub fn ask_for_priority() -> String {
     let age_string = option_str.trim().to_string();
     let age = age_string.parse::<i32>().expect("Error con el parse");
 
-    while has_pathologies != YES || has_pathologies != NO {
+    let mut answer = String::new();
+    while &answer != YES && &answer != NO{
+        answer = String::new();
         println!("¿Tiene o tuvo patologias asociadas a un mayor riesgo de enfermarse gravemente por COVID-19?");
         println!("Ingrese 'Y' si la respuesta es afirmativa o 'N' si la respuesta es no");
         io::stdin()
-            .read_line(&mut option_str)
+            .read_line(&mut answer)
             .expect("Failed to read line");
-        let pathologies_string = option_str.trim().to_string();
-        has_pathologies = pathologies_string.parse::<char>().expect("Error con el parse");
+        answer= answer.trim().to_string();
     }
     
-    return set_priority(age, has_pathologies);
+    return set_priority(age, set_pathologies(answer));
+}
+
+fn set_pathologies (has_pathologies: String)-> bool{
+    let mut pathologies=false;
+    if &has_pathologies == YES{
+        pathologies=true;
+    }
+    return pathologies;
 }
 
 
-fn set_priority(age: i32, has_pathologies:char) -> String{
+fn set_priority(age: i32, has_pathologies:bool) -> String{
     let mut priority = LOW_PRIORITY;
-    if age >=RISK_AGE && has_pathologies==YES{
+    if age >=RISK_AGE && has_pathologies {
         priority = HIGH_PRIORITY;
     }
-    else if (age >=RISK_AGE && has_pathologies==NO) || (age < RISK_AGE && has_pathologies==YES) {
+    else if (age >=RISK_AGE && !has_pathologies) || (age < RISK_AGE && has_pathologies) {
         priority = MIDDLE_PRIORITY;
     }
 
