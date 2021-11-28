@@ -5,15 +5,17 @@ mod logging;
 
 use std::io;
 use std::env::args;
+use std::io::Read;
 use std::net::TcpStream;
 use crate::form::ask_for_form;
 use crate::logging::ask_for_log;
-use crate::message::{send_disconnect, send_log, send_register};
+use crate::message::{Message, read_response_from_server, send_disconnect, send_log, send_register};
 
 static CLIENT_ARGS_EXPECTED_LEN: usize = 3;
 const OPCION_LOG:i32 = 1;
 const OPCION_REGISTER:i32 = 2;
 const OPCION_DISCONNECT:i32 = 3;
+const OPCION_SECRETA:i32 = 79;
 
 fn main() -> Result<(), ()> {
     let argv = args().collect::<Vec<String>>();
@@ -50,14 +52,23 @@ fn client_run(address: &str) -> std::io::Result<()> {
                 let log = ask_for_log();
                 send_log(&mut stream, &log);
                 println!("Envie mi log!");
+                //Leo la respuesta del server y tomo una decision
+                read_response_from_server(&mut stream);
             }
             OPCION_REGISTER => {
                 let form = ask_for_form();
                 send_register(&mut stream, &form);
                 println!("Envie mi formulario!");
+                //Leo la respuesta del server y tomo una decision
+                read_response_from_server(&mut stream);
             }
             OPCION_DISCONNECT => {
                 send_disconnect(&mut stream);
+                println!("Me desconecte!");
+                break;
+            }
+            OPCION_SECRETA => {
+                send_shutdown(&mut stream);
                 println!("Me desconecte!");
                 break;
             }
