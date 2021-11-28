@@ -1,4 +1,4 @@
-use std::io::Write;
+use std::io::{Read, Write};
 use std::net::TcpStream;
 use crate::client_account::ClientAccount;
 use crate::logging::AccountCredentials;
@@ -7,7 +7,10 @@ pub enum Message {
     Log,
     Form,
     Disconnect,
-    Unknown
+    Unknown,
+    Nice,
+    Error,
+    Shutdown
 }
 
 impl From<u8> for Message {
@@ -16,6 +19,9 @@ impl From<u8> for Message {
             0x10 => Message::Log,
             0x20 => Message::Form,
             0x30 => Message::Disconnect,
+            0x40 => Message::Nice,
+            0x50 => Message::Error,
+            0x97 => Message::Shutdown,
             _=> Message::Unknown
         }
     }
@@ -27,6 +33,9 @@ impl From<Message> for u8 {
             Message::Log => 0x10,
             Message::Form => 0x20,
             Message::Disconnect =>  0x30,
+            Message::Nice => 0x40,
+            Message::Error => 0x50,
+            Message_::Shutdown => 0x97,
             _ => 0x99
         }
     }
@@ -34,6 +43,11 @@ impl From<Message> for u8 {
 
 pub fn send_disconnect(stream: &mut TcpStream) {
     let buffer = [Message::Disconnect.into(), 0_u8];
+    stream.write_all(&buffer).unwrap();
+}
+
+pub fn send_shutdown(stream: &mut TcpStream) {
+    let buffer = [Message::Shutdown.into(), 0_u8];
     stream.write_all(&buffer).unwrap();
 }
 
@@ -126,6 +140,22 @@ pub fn send_log(stream: &mut TcpStream, log :&AccountCredentials) {
     for i in 0..password_bytes.len(){
         buffer_envio.push(password_bytes[i]);
     }
-
     stream.write(&buffer_envio).unwrap();
+}
+
+pub fn read_response_from_server(stream: &mut TcpStream) {
+    let mut num_buffer = [0u8; 2]; //Recibimos 2 bytes
+    stream.read_exact(&mut num_buffer);
+    match  Message::from(num_buffer[0]) {
+        Message::Nice => {
+            println!("Se loggeo correctamente!");
+            //Lanzar otro menu donde pueda ver cuando le toco el turno, su info y desloggearse.
+        }
+        Message::Error => {
+            println!("Hubo un error al trata de autentificarse!");
+        }
+        _ => {
+            println!("Nose que me contesto el server!");
+        }
+    }
 }
