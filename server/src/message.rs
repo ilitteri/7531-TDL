@@ -166,7 +166,7 @@ pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message) -> 
         }
         Message::Shutdown => {
             println!("Se procede a apagar el servidor!");
-            //Me guardo todas las historias medicas q tenga del archivo de donde la lei
+            //Me guardo todas las historias medicas q tenga del archivo de donde la lei y salgo
             exit(1);
         }
         _ => {

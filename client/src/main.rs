@@ -9,7 +9,7 @@ use std::io::Read;
 use std::net::TcpStream;
 use crate::form::ask_for_form;
 use crate::logging::ask_for_log;
-use crate::message::{Message, read_response_from_server, send_disconnect, send_log, send_register};
+use crate::message::{Message, read_response_from_server, send_disconnect, send_log, send_register, send_shutdown};
 
 static CLIENT_ARGS_EXPECTED_LEN: usize = 3;
 const OPCION_LOG:i32 = 1;
