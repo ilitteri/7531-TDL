@@ -99,6 +99,15 @@ fn leer_contenido_formulario(buffer_packet: Vec<u8>) -> Result<u8, u8> {
 
     println!("El email es -> {}", email.unwrap());
 
+    let mut priority : Option<String> = None;
+    let tamanio_priority: usize = buffer_packet[(indice) as usize] as usize;
+    indice += 1 as usize;
+    priority = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_priority)])?);
+    indice += tamanio_priority;
+
+    println!("La prioridad es -> {}", priority.unwrap());
+
+
     Ok(1)
 }
 
