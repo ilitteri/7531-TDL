@@ -49,12 +49,3 @@ impl ClientAccount {
         return self.priority.clone();
     }
 }
-// struct MissingFieldError {
-//     description: String
-// }
-//
-// impl MissingLastnameError for MissingFieldError {
-//     fn description(&self) -> &str {
-//         &self.description;
-//     }
-// }
