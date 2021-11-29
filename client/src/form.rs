@@ -62,9 +62,9 @@ pub fn ask_for_form() -> ClientAccount {
     println!("Nombre: {}", client_account.name.clone().unwrap());
     println!("Apellido: {}", client_account.lastname.clone().unwrap());
     println!("Email: {}", client_account.email.clone().unwrap());
-    println!("Contraseña: {}", client_account.name.clone().unwrap());
-    println!("Fecha de nacimiento: {}", client_account.name.clone().unwrap());
-    println!("DNI: {}", client_account.name.clone().unwrap());
+    println!("Contraseña: {}", client_account.password.clone().unwrap());
+    println!("Fecha de nacimiento: {}", client_account.birth_date.clone().unwrap());
+    println!("DNI: {}", client_account.dni.clone().unwrap());
     println!("Prioridad de turno: {}", client_account.priority.clone().unwrap());
 
     return client_account;
