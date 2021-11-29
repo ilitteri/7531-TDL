@@ -36,7 +36,7 @@ impl From<Message> for u8 {
             Message::Disconnect =>  0x30,
             Message::Nice => 0x40,
             Message::Error => 0x50,
-            Message_::Shutdown => 0x97,
+            Message::Shutdown => 0x97,
             _ => 0x99
         }
     }
@@ -50,82 +50,81 @@ fn bytes2string(bytes: &[u8]) -> Result<String, u8> {
 }
 
 fn leer_contenido_formulario(buffer_packet: Vec<u8>) -> Result<u8, u8> {
-    let mut indice = 0 as usize;
+    let mut index = 0 as usize;
     let mut dni : Option<String> = None;
-    let tamanio_dni: usize = buffer_packet[(indice) as usize] as usize;
-    indice += 1 as usize;
-    dni = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_dni)])?);
-    indice += tamanio_dni;
+    let dni_size: usize = buffer_packet[(index) as usize] as usize;
+    index += 1 as usize;
+    dni = Some(bytes2string(&buffer_packet[index..(index + dni_size)])?);
+    index += dni_size;
 
     println!("El Dni es -> {}", dni.unwrap());
 
     let mut password : Option<String> = None;
-    let tamanio_password: usize = buffer_packet[(indice) as usize] as usize;
-    indice += 1 as usize;
-    password = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_password)])?);
-    indice += tamanio_password;
+    let password_size: usize = buffer_packet[(index) as usize] as usize;
+    index += 1 as usize;
+    password = Some(bytes2string(&buffer_packet[index..(index + password_size)])?);
+    index += password_size;
 
     println!("El password es -> {}", password.unwrap());
 
     let mut lastname : Option<String> = None;
-    let tamanio_lastname: usize = buffer_packet[(indice) as usize] as usize;
-    indice += 1 as usize;
-    lastname = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_lastname)])?);
-    indice += tamanio_lastname;
+    let lastname_size: usize = buffer_packet[(index) as usize] as usize;
+    index += 1 as usize;
+    lastname = Some(bytes2string(&buffer_packet[index..(index + lastname_size)])?);
+    index += lastname_size;
 
     println!("El lastname es -> {}", lastname.unwrap());
 
     let mut name : Option<String> = None;
-    let tamanio_name: usize = buffer_packet[(indice) as usize] as usize;
-    indice += 1 as usize;
-    name = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_name)])?);
-    indice += tamanio_name;
+    let name_size: usize = buffer_packet[(index) as usize] as usize;
+    index += 1 as usize;
+    name = Some(bytes2string(&buffer_packet[index..(index + name_size)])?);
+    index += name_size;
 
     println!("El name es -> {}", name.unwrap());
 
     let mut birth_date : Option<String> = None;
-    let tamanio_birth_date: usize = buffer_packet[(indice) as usize] as usize;
-    indice += 1 as usize;
-    birth_date = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_birth_date)])?);
-    indice += tamanio_birth_date;
+    let birth_date_size: usize = buffer_packet[(index) as usize] as usize;
+    index += 1 as usize;
+    birth_date = Some(bytes2string(&buffer_packet[index..(index + birth_date_size)])?);
+    index += birth_date_size;
 
     println!("El birth_date es -> {}", birth_date.unwrap());
 
     let mut email : Option<String> = None;
-    let tamanio_email: usize = buffer_packet[(indice) as usize] as usize;
-    indice += 1 as usize;
-    email = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_email)])?);
-    indice += tamanio_email;
+    let email_size: usize = buffer_packet[(index) as usize] as usize;
+    index += 1 as usize;
+    email = Some(bytes2string(&buffer_packet[index..(index + email_size)])?);
+    index += email_size;
 
     println!("El email es -> {}", email.unwrap());
 
     let mut priority : Option<String> = None;
-    let tamanio_priority: usize = buffer_packet[(indice) as usize] as usize;
-    indice += 1 as usize;
-    priority = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_priority)])?);
-    indice += tamanio_priority;
+    let priority_size: usize = buffer_packet[(index) as usize] as usize;
+    index += 1 as usize;
+    priority = Some(bytes2string(&buffer_packet[index..(index + priority_size)])?);
+    index += priority_size;
 
     println!("La prioridad es -> {}", priority.unwrap());
-
 
     Ok(1)
 }
 
 fn leer_contenido_log(buffer_packet: Vec<u8>) -> Result<u8, u8> {
-    let mut indice = 0 as usize;
+    let mut index = 0 as usize;
     let mut dni : Option<String> = None;
-    let tamanio_dni: usize = buffer_packet[(indice) as usize] as usize;
-    indice += 1 as usize;
-    dni = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_dni)])?);
-    indice += tamanio_dni;
+    let dni_size: usize = buffer_packet[(index) as usize] as usize;
+    index += 1 as usize;
+    dni = Some(bytes2string(&buffer_packet[index..(index + dni_size)])?);
+    index += dni_size;
 
     println!("El Dni es -> {}", dni.unwrap());
 
     let mut password : Option<String> = None;
-    let tamanio_password: usize = buffer_packet[(indice) as usize] as usize;
-    indice += 1 as usize;
-    password = Some(bytes2string(&buffer_packet[indice..(indice+tamanio_password)])?);
-    indice += tamanio_password;
+    let password_size: usize = buffer_packet[(index) as usize] as usize;
+    index += 1 as usize;
+    password = Some(bytes2string(&buffer_packet[index..(index + password_size)])?);
+    index += password_size;
 
     println!("El password es -> {}", password.unwrap());
 
@@ -161,6 +160,7 @@ pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message) -> 
             let _aux2 = leer_contenido_formulario(buffer_packet); // Manejar
             // Aca cuando se tenga la base de clientes se analiza es un usuario correcto o no y se avisa al usuario
             send_nice_log_message(stream);
+            println!("Envie que fue exitoso el form!");
             //Con condicionales segun corresponda
             /*send_error_log_message(&stream);
              */
