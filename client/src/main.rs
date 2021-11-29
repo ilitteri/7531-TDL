@@ -16,6 +16,9 @@ const OPCION_LOG:i32 = 1;
 const OPCION_REGISTER:i32 = 2;
 const OPCION_DISCONNECT:i32 = 3;
 const OPCION_SECRETA:i32 = 79;
+const OPCION_LOG_OFF:i32 = 4;
+const OPCION_ASK_FOR_TURN:i32 = 5;
+const OPCION_CANCEL_TURN:i32 = 6;
 
 fn main() -> Result<(), ()> {
     let argv = args().collect::<Vec<String>>();
@@ -78,4 +81,36 @@ fn client_run(address: &str) -> std::io::Result<()> {
         }
     }
     Ok(())
+}
+
+pub fn logged_menu(stream: &mut TcpStream) {
+    loop {
+        let mut option_str = String::new();
+        println!("Ingresá una opcion:");
+        println!("Ingresa 4 para desloguearse!");
+        println!("Ingresa 5 para pedir un turno!");
+        println!("Ingresa 6 para cancelar tu turno!");
+        io::stdin()
+            .read_line(&mut option_str)
+            .expect("Failed to read line");
+        let option_string = option_str.trim().to_string();
+        let option_int = option_string.parse::<i32>().expect("Error con el parse");
+
+        match option_int {
+            OPCION_LOG_OFF => {
+                //
+                break;
+            }
+            OPCION_ASK_FOR_TURN => {
+                // Falta definir como van a ser los turnos
+            }
+            OPCION_CANCEL_TURN => {
+                // Falta definir como van a ser los turnos
+            }
+            _=> {
+                println!("Opcion invalida intente nuevamente!");
+            }
+        }
+    }
+
 }

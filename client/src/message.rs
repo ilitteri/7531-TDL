@@ -1,6 +1,7 @@
 use std::io::{Read, Write};
 use std::net::TcpStream;
 use crate::client_account::ClientAccount;
+use crate::logged_menu;
 use crate::logging::AccountCredentials;
 
 pub enum Message {
@@ -160,6 +161,7 @@ pub fn read_response_from_server(stream: &mut TcpStream) {
         Message::Nice => {
             println!("Se loggeo correctamente!");
             //Lanzar otro menu donde pueda ver cuando le toco el turno, su info y desloggearse.
+            logged_menu(stream);
         }
         Message::Error => {
             println!("Hubo un error al trata de autentificarse!");
