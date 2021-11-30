@@ -22,7 +22,7 @@ impl From<u8> for Message {
             0x30 => Message::Disconnect,
             0x40 => Message::Nice,
             0x50 => Message::Error,
-            0x97 => Message::Shutdown,
+            0x60 => Message::Shutdown,
             _=> Message::Unknown
         }
     }
@@ -36,7 +36,7 @@ impl From<Message> for u8 {
             Message::Disconnect =>  0x30,
             Message::Nice => 0x40,
             Message::Error => 0x50,
-            Message::Shutdown => 0x97,
+            Message::Shutdown => 0x60,
             _ => 0x99
         }
     }
@@ -176,7 +176,7 @@ pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message) -> 
         Message::Shutdown => {
             println!("Se procede a apagar el servidor!");
             //Me guardo todas las historias medicas q tenga del archivo de donde la lei y salgo
-            exit(1);
+            exit(0);
         }
         _ => {
             println!("Unknown message!")

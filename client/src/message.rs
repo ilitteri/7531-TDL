@@ -22,7 +22,7 @@ impl From<u8> for Message {
             0x30 => Message::Disconnect,
             0x40 => Message::Nice,
             0x50 => Message::Error,
-            0x97 => Message::Shutdown,
+            0x60 => Message::Shutdown,
             _=> Message::Unknown
         }
     }
@@ -36,7 +36,7 @@ impl From<Message> for u8 {
             Message::Disconnect =>  0x30,
             Message::Nice => 0x40,
             Message::Error => 0x50,
-            Message::Shutdown => 0x97,
+            Message::Shutdown => 0x60,
             _ => 0x99
         }
     }
