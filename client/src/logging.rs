@@ -25,10 +25,7 @@ pub fn ask_for_log() -> AccountCredentials{
     let mut dni = String::new();
     let mut password = String::new();
 
-    println!("Ingresa tu DNI:");
-    io::stdin()
-        .read_line(&mut dni)
-        .expect("Failed to read line");
+    let mut dni = ask_for_dni();
 
     println!("Ingresa tu contraseña:");
     io::stdin()
@@ -45,4 +42,22 @@ pub fn ask_for_log() -> AccountCredentials{
     println!("Contraseña: {}", client_account.password.clone().unwrap());
 
     return client_account;
+}
+
+fn ask_for_dni() -> String{
+    let mut answer = String::new();
+    println!("Ingresa tu DNI:");
+    io::stdin()
+        .read_line(&mut answer)
+        .expect("Failed to read line");
+    answer= answer.trim().to_string();
+    while answer.len() != LEN_DNI{
+        answer = String::new();
+        println!("Ingrese un DNI valido por favor: ");
+            io::stdin()
+                .read_line(&mut answer)
+                .expect("Failed to read line");
+            answer= answer.trim().to_string();
+        }
+    return answer;
 }

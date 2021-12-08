@@ -8,6 +8,8 @@ const HIGH_PRIORITY:i32=1;
 const MIDDLE_PRIORITY:i32=2;
 const LOW_PRIORITY:i32=3;
 
+const LEN_DNI:i32 = 8;
+
 pub fn ask_for_form() -> ClientAccount {
     let mut name = String::new();
     let mut lastname = String::new();
@@ -41,11 +43,8 @@ pub fn ask_for_form() -> ClientAccount {
         .read_line(&mut birth_date)
         .expect("Failed to read line");
 
-    println!("Ingresa tu DNI:");
-    io::stdin()
-        .read_line(&mut dni)
-        .expect("Failed to read line");
-
+    
+    let dni = ask_for_dni();
     let priority = ask_for_priority();
 
     let client_account = ClientAccount::new(
@@ -114,4 +113,22 @@ fn set_priority(age: i32, has_pathologies:bool) -> String{
     }
 
     return priority.to_string();
+}
+
+fn ask_for_dni() -> String{
+    let mut answer = String::new();
+    println!("Ingresa tu DNI:");
+    io::stdin()
+        .read_line(&mut answer)
+        .expect("Failed to read line");
+    answer= answer.trim().to_string();
+    while answer.len() != LEN_DNI{
+        answer = String::new();
+        println!("Ingrese un DNI valido por favor: ");
+            io::stdin()
+                .read_line(&mut answer)
+                .expect("Failed to read line");
+            answer= answer.trim().to_string();
+        }
+    return answer;
 }
