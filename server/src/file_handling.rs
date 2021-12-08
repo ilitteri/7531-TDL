@@ -1,46 +1,22 @@
+
 use std::fs::File;
 use std::path::Path;
 use std::io::Write;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ClientAccount {
-    pub name: String,
-    pub lastname: String,
-    pub email: String,
-    pub password: String,
-    pub birth_date: String,
-    pub dni: String,
-    pub priority: String
-}
 
-fn main() {
-    let path = "ejemplo.json";
-    write_json(path);
-    let client_account = read_json(path);
-}
 
 // TODO: ESCRIBIR JSON
-pub fn write_json(path: &str) {
-    let name = "Ivan".to_string();
-    let lastname = "Litteri".to_string();
-    let email = "ilitteri@fi.uba.ar".to_string();
-    let password = "abcd".to_string();
-    let birth_date = "13/04/2000".to_string();
-    let dni = "42646324".to_string();
-    let priority = "2".to_string();
-    
-    let client_account: ClientAccount = ClientAccount { 
-        name: name,
-        lastname: lastname,
-        email: email,
-        password: password,
-        birth_date: birth_date,
-        dni: dni,
-        priority: priority
-     }; 
-    
-    println!("{}", serde_json::to_string(&client_account).unwrap());
+pub fn write_json(path: &str, form :&ClientAccount ) {
+    let file = match File::open(&json_file_path) {
+        Err(why) => panic!("couldn't open {}: {}", display, why),
+        Ok(file) => file,
+    };
+    if file.exists(){
+        user_info = serde_json::to_string(&client_account).unwrap(); 
+        file.write_all(user_info)
+    }
 }
 
 pub fn read_json(path: &str) -> ClientAccount {

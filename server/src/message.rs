@@ -1,3 +1,6 @@
+use crate::client_account::ClientAccount;
+//use crate::file_handling::write_json;
+
 use std::io::{Read, Write};
 use std::net::{Shutdown, TcpStream};
 use std::process::exit;
@@ -41,6 +44,8 @@ impl From<Message> for u8 {
         }
     }
 }
+
+
 
 fn bytes2string(bytes: &[u8]) -> Result<String, u8> {
     match std::str::from_utf8(bytes) {
@@ -106,8 +111,10 @@ fn leer_contenido_formulario(buffer_packet: Vec<u8>) -> Result<u8, u8> {
     index += priority_size;
 
     println!("La prioridad es -> {}", priority.unwrap());
-
+    let mut client_account = ClientAccount::new(name.unwrap(), lastname.unwrap(), email.unwrap(), password.unwrap(), birth_date.unwrap(), dni.unwrap(), priority.unwrap());
+    
     Ok(1)
+
 }
 
 fn leer_contenido_log(buffer_packet: Vec<u8>) -> Result<u8, u8> {
