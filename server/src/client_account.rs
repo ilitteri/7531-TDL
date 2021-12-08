@@ -1,3 +1,6 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ClientAccount {
     pub name: Option<String>,
     pub lastname: Option<String>,

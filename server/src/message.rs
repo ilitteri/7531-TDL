@@ -1,9 +1,10 @@
-use crate::client_account::ClientAccount;
-//use crate::file_handling::write_json;
-
 use std::io::{Read, Write};
 use std::net::{Shutdown, TcpStream};
 use std::process::exit;
+
+use crate::client_account::ClientAccount;
+use crate::file_handling::write_json;
+use crate::logging::AccountCredentials;
 
 const ERROR: u8 = 1;
 
@@ -62,15 +63,11 @@ fn leer_contenido_formulario(buffer_packet: Vec<u8>) -> Result<u8, u8> {
     dni = Some(bytes2string(&buffer_packet[index..(index + dni_size)])?);
     index += dni_size;
 
-    println!("El Dni es -> {}", dni.unwrap());
-
     let mut password : Option<String> = None;
     let password_size: usize = buffer_packet[(index) as usize] as usize;
     index += 1 as usize;
     password = Some(bytes2string(&buffer_packet[index..(index + password_size)])?);
     index += password_size;
-
-    println!("El password es -> {}", password.unwrap());
 
     let mut lastname : Option<String> = None;
     let lastname_size: usize = buffer_packet[(index) as usize] as usize;
@@ -78,15 +75,11 @@ fn leer_contenido_formulario(buffer_packet: Vec<u8>) -> Result<u8, u8> {
     lastname = Some(bytes2string(&buffer_packet[index..(index + lastname_size)])?);
     index += lastname_size;
 
-    println!("El lastname es -> {}", lastname.unwrap());
-
     let mut name : Option<String> = None;
     let name_size: usize = buffer_packet[(index) as usize] as usize;
     index += 1 as usize;
     name = Some(bytes2string(&buffer_packet[index..(index + name_size)])?);
     index += name_size;
-
-    println!("El name es -> {}", name.unwrap());
 
     let mut birth_date : Option<String> = None;
     let birth_date_size: usize = buffer_packet[(index) as usize] as usize;
@@ -94,15 +87,11 @@ fn leer_contenido_formulario(buffer_packet: Vec<u8>) -> Result<u8, u8> {
     birth_date = Some(bytes2string(&buffer_packet[index..(index + birth_date_size)])?);
     index += birth_date_size;
 
-    println!("El birth_date es -> {}", birth_date.unwrap());
-
     let mut email : Option<String> = None;
     let email_size: usize = buffer_packet[(index) as usize] as usize;
     index += 1 as usize;
     email = Some(bytes2string(&buffer_packet[index..(index + email_size)])?);
     index += email_size;
-
-    println!("El email es -> {}", email.unwrap());
 
     let mut priority : Option<String> = None;
     let priority_size: usize = buffer_packet[(index) as usize] as usize;
@@ -110,9 +99,9 @@ fn leer_contenido_formulario(buffer_packet: Vec<u8>) -> Result<u8, u8> {
     priority = Some(bytes2string(&buffer_packet[index..(index + priority_size)])?);
     index += priority_size;
 
-    println!("La prioridad es -> {}", priority.unwrap());
-    let mut client_account = ClientAccount::new(name.unwrap(), lastname.unwrap(), email.unwrap(), password.unwrap(), birth_date.unwrap(), dni.unwrap(), priority.unwrap());
-    
+    let client_account = ClientAccount::new(&name.unwrap(), &lastname.unwrap(), &email.unwrap(), &password.unwrap(), &birth_date.unwrap(), &dni.unwrap(), &priority.unwrap());
+    write_json("client_data", client_account);
+
     Ok(1)
 
 }
@@ -135,6 +124,9 @@ fn leer_contenido_log(buffer_packet: Vec<u8>) -> Result<u8, u8> {
 
     println!("El password es -> {}", password.unwrap());
 
+    //let account_credentials = AccountCredentials::new(&dni.unwrap(), &password.unwrap());
+    //return account_credentials;
+
     Ok(1)
 }
 
@@ -148,16 +140,18 @@ fn send_error_log_message(stream: &mut TcpStream) {
     stream.write_all(&buffer).unwrap();
 }
 
+//fn make_log(log: AccountCredentials) ->ClientAccount
+
 pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message) -> Result<(), std::io::Error> {
     let mut buffer_packet: Vec<u8> = vec![0; size as usize];
     let _aux = stream.read_exact(&mut buffer_packet); //Manejar
     match message_type {
         Message::Log => {
             println!("Recibi un intento de log!");
-            let _aux1 = leer_contenido_log(buffer_packet); // Manejar
-            // Aca cuando se tenga la base de clientes se analiza es un usuario correcto o no y se avisa al usuario
+            let account_credentials = leer_contenido_log(buffer_packet); // Manejar
+            //let client_account = make_log(account_credentials);
             send_nice_log_message(stream);
-            println!("Envie que fue exitoso el log!");
+            println!("Se intenta realizar un log");
             //Con condicionales segun corresponda
             /*send_error_log_message(&stream);
              */

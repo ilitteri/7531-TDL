@@ -4,6 +4,9 @@ use crate::server::Server;
 mod server;
 mod configuration;
 mod message;
+mod file_handling;
+mod client_account;
+mod logging;
 
 static SERVER_ARGS: usize = 2;
 

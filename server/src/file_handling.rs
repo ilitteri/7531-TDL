@@ -1,25 +1,57 @@
-
 use std::fs::File;
 use std::path::Path;
 use std::io::Write;
-use serde::{Deserialize, Serialize};
+use std::io::Read;
+use std::fs::OpenOptions;
+use std::fs;
+use crate::client_account::ClientAccount;
 
-#[derive(Debug, Serialize, Deserialize)]
-
+/*#fn main() -> std::io::Result<()> {
+   let vec = vec![1, 2, 3];
+    let file = File::create("a")?;
+    let mut writer = BufWriter::new(file);
+    serde_json::to_writer(&mut writer, &vec)?;
+    writer.flush()?;
+    Ok(())
+}*/
+  
 
 // TODO: ESCRIBIR JSON
-pub fn write_json(path: &str, form :&ClientAccount ) {
-    let file = match File::open(&json_file_path) {
-        Err(why) => panic!("couldn't open {}: {}", display, why),
-        Ok(file) => file,
-    };
-    if file.exists(){
-        user_info = serde_json::to_string(&client_account).unwrap(); 
-        file.write_all(user_info)
+pub fn write_json(path: &str, form:ClientAccount )  -> Result<(), serde_json::Error> {
+    let json_file_path = Path::new(path);
+    let display = json_file_path.display();
+
+    if json_file_path.exists(){
+        let mut file = match File::open(&json_file_path) {
+            Err(why) => panic!("La informacion del cliente no pudo ser guardada. Motivo: couldn't open {}: {}", display, why),
+            Ok(file) => file,
+        };
+        let data = fs::read_to_string(path).expect("Unable to read file");
+        let mut clients: Vec<ClientAccount> = Vec::new();
+        if fs::metadata(path).unwrap().len() != 0 {
+            clients = serde_json::from_str(&data)?;
+        }
+    
+        clients.push(form);
+        let json: String = serde_json::to_string(&clients)?;
+        fs::write(path, &json).expect("Unable to write file");
     }
+         
+    else{
+        let mut file = match File::create(&json_file_path) {
+            Err(why) => panic!("La informacion del cliente no pudo ser guardada. Motivo: couldn't create {}: {}", display, why),
+            Ok(file) => file,
+        };
+        let mut clients: Vec<ClientAccount> = Vec::new();
+        clients.push(form);
+        let json: String = serde_json::to_string(&clients)?;
+        fs::write(path, &json).expect("Unable to write file");
+    }
+    Ok(())
 }
 
-pub fn read_json(path: &str) -> ClientAccount {
+//fix
+pub fn read_json(path: &str) -> Vec<ClientAccount> {
     let json_file_path = Path::new(path);
     let display = json_file_path.display();
 
@@ -28,17 +60,12 @@ pub fn read_json(path: &str) -> ClientAccount {
         Ok(file) => file,
     };
 
-    let client_account: ClientAccount = serde_json::from_reader(file).unwrap();
+    let data = fs::read_to_string(path).expect("Unable to read file");
+    let mut clients: Vec<ClientAccount> = Vec::new();
+    if fs::metadata(path).unwrap().len() != 0 {
+        clients = serde_json::from_str(&data)?;
+    }
+    
 
-    // TODO: Sacar
-    println!("Tus datos son estos:");
-    println!("Nombre: {}", client_account.name);
-    println!("Apellido: {}", client_account.lastname);
-    println!("Email: {}", client_account.email);
-    println!("Contraseña: {}", client_account.password);
-    println!("Fecha de nacimiento: {}", client_account.birth_date);
-    println!("DNI: {}", client_account.dni);
-    println!("Prioridad de turno: {}", client_account.priority);
-
-    return client_account;
+    return clients;
 }
