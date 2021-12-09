@@ -4,6 +4,8 @@ use std::process::exit;
 
 use crate::client_account::ClientAccount;
 use crate::file_handling::write_json;
+use crate::file_handling::read_json;
+use crate::logging::check_credentials;
 use crate::logging::AccountCredentials;
 
 const ERROR: u8 = 1;
@@ -106,7 +108,7 @@ fn leer_contenido_formulario(buffer_packet: Vec<u8>) -> Result<u8, u8> {
 
 }
 
-fn leer_contenido_log(buffer_packet: Vec<u8>) -> Result<u8, u8> {
+fn leer_contenido_log(buffer_packet: Vec<u8>) -> Result<ClientAccount, u8> {
     let mut index = 0 as usize;
     let mut dni : Option<String> = None;
     let dni_size: usize = buffer_packet[(index) as usize] as usize;
@@ -114,7 +116,7 @@ fn leer_contenido_log(buffer_packet: Vec<u8>) -> Result<u8, u8> {
     dni = Some(bytes2string(&buffer_packet[index..(index + dni_size)])?);
     index += dni_size;
 
-    println!("El Dni es -> {}", dni.unwrap());
+    //println!("El Dni es -> {}", dni.unwrap());
 
     let mut password : Option<String> = None;
     let password_size: usize = buffer_packet[(index) as usize] as usize;
@@ -122,12 +124,13 @@ fn leer_contenido_log(buffer_packet: Vec<u8>) -> Result<u8, u8> {
     password = Some(bytes2string(&buffer_packet[index..(index + password_size)])?);
     index += password_size;
 
-    println!("El password es -> {}", password.unwrap());
+    //println!("El password es -> {}", password.unwrap());
 
-    //let account_credentials = AccountCredentials::new(&dni.unwrap(), &password.unwrap());
-    //return account_credentials;
-
-    Ok(1)
+    let account_credentials = AccountCredentials::new(&dni.clone().unwrap(), &password.unwrap());
+    if let Ok(account)= read_json("client_data", dni.clone().unwrap()){
+        return check_credentials(account_credentials, account);
+    }
+    Err(1)
 }
 
 fn send_nice_log_message(stream: &mut TcpStream) {
@@ -150,11 +153,13 @@ pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message) -> 
             println!("Recibi un intento de log!");
             let account_credentials = leer_contenido_log(buffer_packet); // Manejar
             //let client_account = make_log(account_credentials);
-            send_nice_log_message(stream);
-            println!("Se intenta realizar un log");
-            //Con condicionales segun corresponda
-            /*send_error_log_message(&stream);
-             */
+            if account_credentials.is_ok(){
+                send_nice_log_message(stream);
+                println!("Se intenta realizar un log");
+            }
+            else{
+                send_error_log_message(stream);
+            }
         }
         Message::Form => {
             println!("Recibi un formulario!");
