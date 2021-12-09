@@ -5,6 +5,7 @@ use std::process::exit;
 use crate::client_account::ClientAccount;
 use crate::file_handling::write_json;
 use crate::file_handling::read_json;
+use crate::appointments::get_appointment;
 use crate::logging::check_credentials;
 use crate::logging::AccountCredentials;
 
@@ -172,7 +173,7 @@ pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message) -> 
              */
         }
         Message::Unknown => {
-            println!("Nose que paso!");
+            println!("No se que paso!");
         }
         Message::Disconnect => {
             println!("El cliente se desconecto :,C!");
