@@ -4,6 +4,7 @@ use std::path::Path;
 //use std::io::Read;
 //use std::fs::OpenOptions;
 use std::fs;
+use std::sync::{Arc, Mutex};
 //use serde_json::{Deserializer, Value};
 use crate::client_account::ClientAccount;
 
@@ -27,9 +28,9 @@ pub fn write_json(path: &str, form:ClientAccount )  -> Result<(), serde_json::Er
     let display = json_file_path.display();
 
     if json_file_path.exists(){
-        let file = match File::open(&json_file_path) {  //saque el mut
+        let _file = match File::open(&json_file_path) {
             Err(why) => panic!("La informacion del cliente no pudo ser guardada. Motivo: couldn't open {}: {}", display, why),
-            Ok(file) => file,
+            Ok(_file) => _file,
         };
         let data = fs::read_to_string(path).expect("Unable to read file");
         let mut clients: Vec<ClientAccount> = Vec::new();
@@ -43,9 +44,9 @@ pub fn write_json(path: &str, form:ClientAccount )  -> Result<(), serde_json::Er
     }
          
     else{
-        let file = match File::create(&json_file_path) {    //saque el mut
+        let _file = match File::create(&json_file_path) {
             Err(why) => panic!("La informacion del cliente no pudo ser guardada. Motivo: couldn't create {}: {}", display, why),
-            Ok(file) => file,
+            Ok(_file) => _file,
         };
         let mut clients: Vec<ClientAccount> = Vec::new();
         clients.push(form);
@@ -62,13 +63,12 @@ pub fn get_accounts(path: &str) -> Vec<ClientAccount> {
     return clients;
 }
 
-pub fn read_json(path: &str, dni: String) -> Result<ClientAccount, ReadError> {
-
-    let clients: Vec<ClientAccount> = get_accounts(path);
+pub fn find_user(mutex: &Arc<Mutex<Vec<ClientAccount>>>, dni: String) -> Result<ClientAccount, ReadError> {
+    let vector = mutex.lock().unwrap();
     let mut client_account = None;
-    for account in clients{
-        if account.dni == Some(dni.clone()){
-            client_account = Some(account);
+    for account in vector.iter(){
+        if account.get_dni() == Some(dni.clone()){
+            client_account = Some(account.clone());
             break;
         }
     }

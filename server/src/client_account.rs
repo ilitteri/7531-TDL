@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ClientAccount {
     pub name: Option<String>,
     pub lastname: Option<String>,
@@ -22,5 +22,9 @@ impl ClientAccount {
             dni: Some(dni.to_string()),
             priority: Some(priority.to_string())
         }
+    }
+
+    pub fn get_dni(&self) -> Option<String> {
+        return self.dni.clone();
     }
 }

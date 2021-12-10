@@ -5,11 +5,10 @@ mod logging;
 
 use std::io;
 use std::env::args;
-use std::io::Read;
 use std::net::TcpStream;
 use crate::form::ask_for_form;
 use crate::logging::ask_for_log;
-use crate::message::{Message, read_response_from_server, send_disconnect, send_log, send_register, send_shutdown};
+use crate::message::{read_date, read_response_from_server, send_consult, send_disconnect, send_log, send_register, send_shutdown};
 
 static CLIENT_ARGS_EXPECTED_LEN: usize = 3;
 const OPCION_LOG:i32 = 1;
@@ -17,8 +16,7 @@ const OPCION_REGISTER:i32 = 2;
 const OPCION_DISCONNECT:i32 = 3;
 const OPCION_SECRETA:i32 = 79;
 const OPCION_LOG_OFF:i32 = 4;
-const OPCION_ASK_FOR_TURN:i32 = 5;
-const OPCION_CANCEL_TURN:i32 = 6;
+const OPCION_CONSULT_TURN:i32 = 5;
 
 fn main() -> Result<(), ()> {
     let argv = args().collect::<Vec<String>>();
@@ -88,8 +86,7 @@ pub fn logged_menu(stream: &mut TcpStream) {
         let mut option_str = String::new();
         println!("Ingresá una opcion:");
         println!("Ingresa 4 para desloguearse!");
-        println!("Ingresa 5 para pedir un turno!");
-        println!("Ingresa 6 para cancelar tu turno!");
+        println!("Ingresa 5 para consultar turno!");
         io::stdin()
             .read_line(&mut option_str)
             .expect("Failed to read line");
@@ -99,13 +96,12 @@ pub fn logged_menu(stream: &mut TcpStream) {
         match option_int {
             OPCION_LOG_OFF => {
                 //
+                println!("Me desconecte!");
                 break;
             }
-            OPCION_ASK_FOR_TURN => {
-                // Falta definir como van a ser los turnos
-            }
-            OPCION_CANCEL_TURN => {
-                // Falta definir como van a ser los turnos
+            OPCION_CONSULT_TURN => {
+                send_consult(stream);
+                let _aux = read_date(stream); //Manejar
             }
             _=> {
                 println!("Opcion invalida intente nuevamente!");

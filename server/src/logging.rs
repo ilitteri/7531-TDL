@@ -17,9 +17,8 @@ impl AccountCredentials {
 }
 
 pub fn check_credentials(form: AccountCredentials, acc: ClientAccount) -> Result<ClientAccount, u8>{
-
     if acc.password == form.password{
-        println!("{:?}", acc);
+        //println!("{:?}", acc);
         return Ok(acc);
     }
     return Err(ERROR);

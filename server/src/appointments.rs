@@ -1,6 +1,6 @@
 use crate::client_account::ClientAccount;
-use crate::file_handling::get_accounts;
 use std::cmp::Ordering;
+use std::sync::{Arc, Mutex};
 
 impl Ord for ClientAccount {
     fn cmp(&self, other: &Self) -> Ordering {
@@ -22,10 +22,22 @@ impl PartialEq for ClientAccount {
 
 impl Eq for ClientAccount { }
 
-pub fn get_appointment(dni: &str){
-    let mut clients: Vec<ClientAccount> = get_accounts("client_data");
+pub fn get_appointment(dni: &str, mutex: &Arc<Mutex<Vec<ClientAccount>>>) -> String{
+    let mut clients = mutex.lock().unwrap();
+    let mut indice:i16 = -1;
+    let mut contador = 0;
     clients.sort();
-    println!("{:?}", clients[0]);
-    println!("{:?}", clients[1]);
-    println!("{:?}", clients[2]);
+
+    for account in clients.iter(){
+        println!("El dni en el vector es -> {}", account.get_dni().unwrap());
+        println!("El dni buscado es -> {}", dni.to_string().clone());
+        if account.get_dni() == Some(dni.to_string().clone()){
+            indice = contador;
+            break;
+        }
+        println!("Itere! {}", contador);
+        contador += 1;
+    }
+
+    return indice.to_string();
 }
