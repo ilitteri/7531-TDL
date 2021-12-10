@@ -4,6 +4,8 @@ use crate::client_account::ClientAccount;
 use crate::logged_menu;
 use crate::logging::AccountCredentials;
 
+const ERROR: u8 = 1;
+
 pub enum Message {
     Log,
     Form,
@@ -11,7 +13,8 @@ pub enum Message {
     Unknown,
     Nice,
     Error,
-    Shutdown
+    Shutdown,
+    Appointment
 }
 
 impl From<u8> for Message {
@@ -23,6 +26,7 @@ impl From<u8> for Message {
             0x40 => Message::Nice,
             0x50 => Message::Error,
             0x60 => Message::Shutdown,
+            0x70 => Message::Appointment,
             _=> Message::Unknown
         }
     }
@@ -37,6 +41,7 @@ impl From<Message> for u8 {
             Message::Nice => 0x40,
             Message::Error => 0x50,
             Message::Shutdown => 0x60,
+            Message::Appointment => 0x70,
             _ => 0x99
         }
     }
@@ -156,7 +161,7 @@ pub fn send_log(stream: &mut TcpStream, log :&AccountCredentials) {
 
 pub fn read_response_from_server(stream: &mut TcpStream) {
     let mut num_buffer = [0u8; 2]; //Recibimos 2 bytes
-    stream.read_exact(&mut num_buffer);
+    let _aux = stream.read_exact(&mut num_buffer); //Manejar
     match  Message::from(num_buffer[0]) {
         Message::Nice => {
             println!("Se loggeo correctamente!");
@@ -170,4 +175,39 @@ pub fn read_response_from_server(stream: &mut TcpStream) {
             println!("Nose que me contesto el server!");
         }
     }
+}
+
+pub fn send_consult(stream: &mut TcpStream) {
+    let buffer = [Message::Appointment.into(), 0_u8];
+    stream.write_all(&buffer).unwrap();
+}
+
+fn bytes2string(bytes: &[u8]) -> Result<String, u8> {
+    match std::str::from_utf8(bytes) {
+        Ok(str) => Ok(str.to_owned()),
+        Err(_) => Err(ERROR)
+    }
+}
+
+pub fn read_date(stream: &mut TcpStream) -> Result<ClientAccount, u8>{
+    let mut num_buffer = [0u8; 2]; //Recibimos 2 bytes
+    let _aux = stream.read_exact(&mut num_buffer); //manejar
+    match  Message::from(num_buffer[0]) {
+        Message::Appointment => {
+            let mut buffer_packet: Vec<u8> = vec![0; num_buffer[1] as usize];
+            let _aux = stream.read_exact(&mut buffer_packet);
+            println!("Consulte el turno!");
+            let mut _index = 0 as usize;
+            let mut _dias: Option<String> = None;
+            let days_size: usize = buffer_packet[(_index) as usize] as usize;
+            _index += 1 as usize;
+            _dias = Some(bytes2string(&buffer_packet[_index..(_index + days_size)])?);
+            _index += days_size;
+            println!("El turno es en {} días", _dias.unwrap());
+        }
+        _ => {
+            println!("Nose que me contesto el server!");
+        }
+    }
+    Err(1)
 }
