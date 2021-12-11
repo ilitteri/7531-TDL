@@ -1,14 +1,10 @@
 use std::collections::HashMap;
 
 const DEFAULT_PORT: u16 = 7666;
-const DEFAULT_DUMPFILE: &str = "dump.txt";
-const DEFAULT_LOGFILE: &str = "logfile.txt";
 const DEFAULT_IP: &str = "127.0.0.1";
 
 pub struct Configuration {
     port: u16,
-    dumpfile: String,
-    logfile: String,
     ip: String,
 }
 
@@ -16,8 +12,6 @@ impl Configuration {
     pub fn new() -> Self {
         Configuration {
             port: DEFAULT_PORT,
-            dumpfile: DEFAULT_DUMPFILE.to_string(),
-            logfile: DEFAULT_LOGFILE.to_string(),
             ip: DEFAULT_IP.to_string(),
         }
     }
@@ -55,16 +49,8 @@ impl Configuration {
     }
 
     fn set_all_params(&mut self, map: HashMap<String, String>) -> Option<String> {
-        if let Some(logfile_) = map.get("logfile") {
-            self.logfile = logfile_.to_string();
-            println!("Archivo de log cargado : {}", self.logfile);
-        }
         if let Some(port_) = map.get("port") {
             self.port = port_.parse().unwrap();
-        }
-        if let Some(dumpfile_) = map.get("dumpfile") {
-            self.dumpfile = dumpfile_.to_string();
-            println!("Se subió la opción de configuración : {}", self.dumpfile);
         }
         None
     }
