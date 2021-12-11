@@ -8,9 +8,7 @@ use crate::file_handling::get_accounts;
 use crate::message::read_message;
 
 pub struct Server {
-    //
     cfg: Configuration,
-    //
 }
 
 static PATH: &str = "client_data";
@@ -18,7 +16,7 @@ static PATH: &str = "client_data";
 impl Server {
     pub fn new(file_path: &str) -> Self {
         let mut config = Configuration::new();
-        let _aux = config.set_config(file_path); //Manejar
+        let _aux = config.set_config(file_path);
         Server {
             cfg: config,
         }
@@ -27,7 +25,7 @@ impl Server {
     pub fn run(&self) -> std::io::Result<()> {
         let address = self.cfg.get_address();
         println!("IP: {}", &address);
-        let _aux = Server::wait_new_clients(&address); //Manejar
+        let _aux = Server::wait_new_clients(&address);
         Ok(())
     }
 
@@ -57,11 +55,11 @@ fn handle_client(_id :usize, stream: &mut TcpStream, lock: &Arc<Mutex<Vec<Client
 fn read_packet_from_client(stream: &mut TcpStream, lock: &Arc<Mutex<Vec<ClientAccount>>>) {
     let mut dni_user: String = String::new();
     loop {
-        let mut num_buffer = [0u8; 2]; //Recibimos 2 bytes
+        let mut num_buffer = [0u8; 2];
         match stream.read_exact(&mut num_buffer) {
             Ok(_) => {
                 let message_type = num_buffer[0].into();
-                let _aux = read_message(stream, num_buffer[1], message_type, lock, &mut dni_user); //Manejar
+                let _aux = read_message(stream, num_buffer[1], message_type, lock, &mut dni_user);
             }
             Err(_) => {
                 println!("El cliente se desconecto y cerro el stream.");

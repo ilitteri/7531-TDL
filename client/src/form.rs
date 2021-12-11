@@ -57,15 +57,6 @@ pub fn ask_for_form() -> ClientAccount {
         priority.trim(),
     );
 
-    println!("Tus datos son estos:");
-    println!("Nombre: {}", client_account.name.clone().unwrap());
-    println!("Apellido: {}", client_account.lastname.clone().unwrap());
-    println!("Email: {}", client_account.email.clone().unwrap());
-    println!("Contraseña: {}", client_account.password.clone().unwrap());
-    println!("Fecha de nacimiento: {}", client_account.birth_date.clone().unwrap());
-    println!("DNI: {}", client_account.dni.clone().unwrap());
-    println!("Prioridad de turno: {}", client_account.priority.clone().unwrap());
-
     return client_account;
 }
 
@@ -84,7 +75,7 @@ pub fn ask_for_priority() -> String {
     while &answer != YES && &answer != NO{
         answer = String::new();
         println!("¿Tiene o tuvo patologias asociadas a un mayor riesgo de enfermarse gravemente por COVID-19?");
-        println!("Ingrese 'Y' si la respuesta es afirmativa o 'N' si la respuesta es no");
+        println!("Ingrese 'y' si la respuesta es afirmativa o 'n' si la respuesta es no");
         io::stdin()
             .read_line(&mut answer)
             .expect("Failed to read line");
@@ -120,14 +111,14 @@ pub fn ask_for_dni() -> String{
     println!("Ingresa tu DNI:");
     io::stdin()
         .read_line(&mut answer)
-        .expect("Failed to read line");
+        .expect("Error al leer la linea");
     answer= answer.trim().to_string();
     while answer.len() != LEN_DNI as usize{
         answer = String::new();
         println!("Ingrese un DNI valido por favor: ");
             io::stdin()
                 .read_line(&mut answer)
-                .expect("Failed to read line");
+                .expect("Error al leer la linea");
             answer= answer.trim().to_string();
         }
     return answer;

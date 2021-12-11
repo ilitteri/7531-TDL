@@ -31,16 +31,13 @@ pub fn ask_for_log() -> AccountCredentials{
     println!("Ingresa tu contraseña:");
     io::stdin()
         .read_line(&mut password)
-        .expect("Failed to read line");
+        .expect("Error al leer la linea");
 
 
     let client_account = AccountCredentials::new(
         _dni.trim(),
         password.trim(),
     );
-    println!("Tus datos son estos:");
-    println!("DNI: {}", client_account.dni.clone().unwrap());
-    println!("Contraseña: {}", client_account.password.clone().unwrap());
 
     return client_account;
 }
