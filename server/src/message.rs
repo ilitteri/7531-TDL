@@ -157,8 +157,6 @@ pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message, loc
         Message::Log => {
             println!("Recibi un intento de log!");
             let account_credentials = leer_contenido_log(buffer_packet, lock, dni_user); // Manejar
-            println!("El dni despues del log es -> {}", dni_user);
-            //let client_account = make_log(account_credentials);
             if account_credentials.is_ok(){
                 send_nice_log_message(stream);
                 println!("Se intenta realizar un log");

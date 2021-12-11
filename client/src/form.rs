@@ -16,7 +16,7 @@ pub fn ask_for_form() -> ClientAccount {
     let mut email = String::new();
     let mut password = String::new();
     let mut birth_date = String::new();
-    let mut dni = String::new();
+    let mut _dni = String::new();
 
     println!("Ingresá tu nombre:");
     io::stdin()
@@ -44,7 +44,7 @@ pub fn ask_for_form() -> ClientAccount {
         .expect("Failed to read line");
 
     
-    let dni = ask_for_dni();
+    let _dni = ask_for_dni();
     let priority = ask_for_priority();
 
     let client_account = ClientAccount::new(
@@ -53,7 +53,7 @@ pub fn ask_for_form() -> ClientAccount {
         email.trim(),
         password.trim(),
         birth_date.trim(),
-        dni.trim(),
+        _dni.trim(),
         priority.trim(),
     );
 
@@ -115,14 +115,14 @@ fn set_priority(age: i32, has_pathologies:bool) -> String{
     return priority.to_string();
 }
 
-fn ask_for_dni() -> String{
+pub fn ask_for_dni() -> String{
     let mut answer = String::new();
     println!("Ingresa tu DNI:");
     io::stdin()
         .read_line(&mut answer)
         .expect("Failed to read line");
     answer= answer.trim().to_string();
-    while answer.len() != LEN_DNI{
+    while answer.len() != LEN_DNI as usize{
         answer = String::new();
         println!("Ingrese un DNI valido por favor: ");
             io::stdin()
