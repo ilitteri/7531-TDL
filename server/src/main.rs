@@ -14,7 +14,7 @@ static SERVER_ARGS: usize = 2;
 fn main() -> Result<(), ()> {
     let argv = args().collect::<Vec<String>>();
     if argv.len() != SERVER_ARGS {
-        println!("Invalid number of arguments");
+        println!("Número inválido de argumentos");
         return Err(());
     }
     let server = Server::new(&argv[1]);

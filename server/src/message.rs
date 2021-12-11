@@ -59,7 +59,7 @@ fn bytes2string(bytes: &[u8]) -> Result<String, u8> {
     }
 }
 
-fn leer_contenido_formulario(buffer_packet: Vec<u8>, mutex: &Arc<Mutex<Vec<ClientAccount>>>, dni_user: &mut String) -> Result<u8, u8> {
+fn read_forms(buffer_packet: Vec<u8>, mutex: &Arc<Mutex<Vec<ClientAccount>>>, dni_user: &mut String) -> Result<u8, u8> {
     let mut _index = 0 as usize;
     let mut _dni: Option<String> = None;
     let dni_size: usize = buffer_packet[(_index) as usize] as usize;
@@ -107,7 +107,7 @@ fn leer_contenido_formulario(buffer_packet: Vec<u8>, mutex: &Arc<Mutex<Vec<Clien
 
     let client_account = ClientAccount::new(&_name.unwrap(), &_lastname.unwrap(), &_email.unwrap(), &_password.unwrap(), &_birth_date.unwrap(), &_dni.unwrap(), &_priority.unwrap());
     mutex.lock().unwrap().push(client_account.clone());
-    let _aux = write_json("client_data", client_account); //Manejar
+    let _aux = write_json("client_data", client_account);
 
     Ok(1)
 }
@@ -121,15 +121,12 @@ fn leer_contenido_log(buffer_packet: Vec<u8>, lock: &Arc<Mutex<Vec<ClientAccount
     _index += dni_size;
     let aux = _dni.clone().unwrap();
     *algo = aux;
-    //println!("El Dni es -> {}", dni.unwrap());
 
     let mut _password: Option<String> = None;
     let password_size: usize = buffer_packet[(_index) as usize] as usize;
     _index += 1 as usize;
     _password = Some(bytes2string(&buffer_packet[_index..(_index + password_size)])?);
     _index += password_size;
-
-    //println!("El password es -> {}", password.unwrap());
 
     let account_credentials = AccountCredentials::new(&_dni.clone().unwrap(), &_password.unwrap());
     if let Ok(account)= find_user(lock, _dni.clone().unwrap()){
@@ -148,54 +145,48 @@ fn send_error_log_message(stream: &mut TcpStream) {
     stream.write_all(&buffer).unwrap();
 }
 
-//fn make_log(log: AccountCredentials) ->ClientAccount
-
 pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message, lock: &Arc<Mutex<Vec<ClientAccount>>>, dni_user: &mut String) -> Result<(), std::io::Error> {
     let mut buffer_packet: Vec<u8> = vec![0; size as usize];
-    let _aux = stream.read_exact(&mut buffer_packet); //Manejar
+    let _aux = stream.read_exact(&mut buffer_packet);
     match message_type {
         Message::Log => {
-            println!("Recibi un intento de log!");
-            let account_credentials = leer_contenido_log(buffer_packet, lock, dni_user); // Manejar
+            let account_credentials = leer_contenido_log(buffer_packet, lock, dni_user);
             if account_credentials.is_ok(){
                 send_nice_log_message(stream);
-                println!("Se intenta realizar un log");
+                println!("Hubo un intento de inicio de sesión");
             }
             else{
                 send_error_log_message(stream);
             }
         }
         Message::Form => {
-            println!("Recibi un formulario!");
-            let _aux2 = leer_contenido_formulario(buffer_packet, lock, dni_user); // Manejar
-            // Aca cuando se tenga la base de clientes se analiza es un usuario correcto o no y se avisa al usuario
+            println!("Recibí un formulario");
+            let _aux2 = read_forms(buffer_packet, lock, dni_user);
+            println!("Intento enviar que el formulario fue recibido");
             send_nice_log_message(stream);
-            println!("Envie que fue exitoso el form!");
+            println!("Se envió que el formulario fue recibido");
         }
         Message::Unknown => {
-            println!("No se que paso!");
+            println!("No reconozco este mensaje");
         }
         Message::Disconnect => {
-            println!("El cliente se desconecto :,C!");
-            println!("Cierro el stream y el thread!");
+            println!("El cliente se desconecto :,C");
+            println!("Cierro el stream y el thread");
             stream.shutdown(Shutdown::Both).expect("shutdown call failed");
         }
         Message::Shutdown => {
-
-
             println!("Se procede a apagar el servidor!");
-            //Me guardo todas las historias medicas q tenga del archivo de donde la lei y salgo
             exit(0);
         }
         Message::Appointment => {
-            println!("Me llego una consulta de turno!");
-            println!("El dni antes del get appoitment es -> {}", dni_user);
+            println!("Recibí una consulta de turno");
             let respuesta = get_appointment(&dni_user.as_str(), lock);
-            println!("Le mande en cuantos dias tienen el turno! ({})", respuesta);
+            println!("Intento enviar una consulta de turno");
             send_date(stream, respuesta);
+            println!("Envié una consulta de turno");
         }
         _ => {
-            println!("Unknown message!")
+            println!("Mensaje desconocido");
         }
     }
     Ok(())

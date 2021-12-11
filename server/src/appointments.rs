@@ -29,13 +29,10 @@ pub fn get_appointment(dni: &str, mutex: &Arc<Mutex<Vec<ClientAccount>>>) -> Str
     clients.sort();
 
     for account in clients.iter(){
-        println!("El dni en el vector es -> {}", account.get_dni().unwrap());
-        println!("El dni buscado es -> {}", dni.to_string().clone());
         if account.get_dni() == Some(dni.to_string().clone()){
             indice = contador;
             break;
         }
-        println!("Itere! {}", contador);
         contador += 1;
     }
 
