@@ -163,7 +163,12 @@ pub fn read_date(stream: &mut TcpStream) -> Result<ClientAccount, u8>{
             _index += 1 as usize;
             _dias = Some(bytes2string(&buffer_packet[_index..(_index + days_size)])?);
             _index += days_size;
-            println!("\nEl turno es en {} días\n", _dias.unwrap());
+            let aux = _dias.clone();
+            if aux.unwrap() == String::from("-1") {
+                println!("No tiene un turno asignado o la cuenta no existe!");
+            } else {
+                println!("\nEl turno es en {} días\n", _dias.unwrap());
+            }
         }
         _ => {
             println!("\nNo se que me contesto el server!\n");

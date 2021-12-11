@@ -8,6 +8,7 @@ use crate::file_handling::{find_user, update_database, write_json};
 use crate::appointments::get_appointment;
 use crate::logging::check_credentials;
 use crate::logging::AccountCredentials;
+use crate::server::PATH;
 
 const ERROR: u8 = 1;
 
@@ -111,7 +112,7 @@ fn read_forms(buffer_packet: Vec<u8>, mutex: &Arc<Mutex<Vec<ClientAccount>>>, dn
     let client_account = ClientAccount::new(&_name.unwrap(), &_lastname.unwrap(), &_email.unwrap(), &_password.unwrap(), &_birth_date.unwrap(), &_dni.unwrap(), &_priority.unwrap());
 
     mutex.lock().unwrap().push(client_account.clone());
-    let _aux = write_json("client_data", client_account); // Seguro por si se cae el server
+    let _aux = write_json(PATH, client_account); // Seguro por si se cae el server
 
     Ok(1)
 }
@@ -204,8 +205,15 @@ pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message, loc
 
 pub fn delete_user(dni_user: &mut String, mutex: &Arc<Mutex<Vec<ClientAccount>>>) {
     let mut vector = mutex.lock().unwrap();
-    let index = vector.iter().position(|x| x.get_dni() == Some(dni_user.clone())).unwrap();
-    vector.remove(index);
+    match vector.iter().position(|x| x.get_dni() == Some(dni_user.clone())) {
+        Some(x) => {
+            vector.remove(x);
+        }
+        _ => {
+            println!("No pude borrar el usuario porque no estaba en la database!");
+        }
+    }
+
 }
 
 pub fn send_date(stream: &mut TcpStream, respuesta: String) {
