@@ -70,61 +70,27 @@ fn calculate_lenght(form :&ClientAccount) -> u8 {
     return lenght;
 }
 
+fn push_to_buffer(buffer: &mut Vec<u8>, data: String) {
+    buffer.push(data.len() as u8);
+    let data_bytes = data.as_bytes();
+    for i in 0..data_bytes.len(){
+        buffer.push(data_bytes[i]);
+    }
+}
+
 pub fn send_register(stream: &mut TcpStream, form :&ClientAccount) {
     let lenght = calculate_lenght(&form);
-    println!("El tamaño del form es ->{}",lenght);
     let buffer = [Message::Form.into(), lenght];
     stream.write_all(&buffer).unwrap();
     let mut buffer_envio: Vec<u8> = Vec::with_capacity(lenght.into());
 
-    buffer_envio.push(form.get_dni().unwrap().len() as u8);
-    let dni = form.get_dni().unwrap();
-    let dni_bytes = dni.as_bytes();
-    for i in 0..dni_bytes.len(){
-        buffer_envio.push(dni_bytes[i]);
-    }
-
-    buffer_envio.push(form.get_password().unwrap().len() as u8);
-    let password = form.get_password().unwrap();
-    let password_bytes = password.as_bytes();
-    for i in 0..password_bytes.len(){
-        buffer_envio.push(password_bytes[i]);
-    }
-
-    buffer_envio.push(form.get_lastname().unwrap().len() as u8);
-    let lastname = form.get_lastname().unwrap();
-    let lastname_bytes = lastname.as_bytes();
-    for i in 0..lastname_bytes.len(){
-        buffer_envio.push(lastname_bytes[i]);
-    }
-
-    buffer_envio.push(form.get_name().unwrap().len() as u8);
-    let name = form.get_name().unwrap();
-    let name_bytes = name.as_bytes();
-    for i in 0..name_bytes.len(){
-        buffer_envio.push(name_bytes[i]);
-    }
-
-    buffer_envio.push(form.get_birth_date().unwrap().len() as u8);
-    let birth_date = form.get_birth_date().unwrap();
-    let birth_bytes = birth_date.as_bytes();
-    for i in 0..birth_bytes.len(){
-        buffer_envio.push(birth_bytes[i]);
-    }
-
-    buffer_envio.push(form.get_email().unwrap().len() as u8);
-    let email = form.get_email().unwrap();
-    let email_bytes = email.as_bytes();
-    for i in 0..email_bytes.len(){
-        buffer_envio.push(email_bytes[i]);
-    }
-
-    buffer_envio.push(form.get_priority().unwrap().len() as u8);
-    let priority = form.get_priority().unwrap();
-    let priority_bytes = priority.as_bytes();
-    for i in 0..priority_bytes.len(){
-        buffer_envio.push(priority_bytes[i]);
-    }
+    push_to_buffer(&mut buffer_envio, form.get_dni().unwrap());
+    push_to_buffer(&mut buffer_envio, form.get_password().unwrap());
+    push_to_buffer(&mut buffer_envio, form.get_lastname().unwrap());
+    push_to_buffer(&mut buffer_envio, form.get_name().unwrap());
+    push_to_buffer(&mut buffer_envio, form.get_email().unwrap());
+    push_to_buffer(&mut buffer_envio, form.get_birth_date().unwrap());
+    push_to_buffer(&mut buffer_envio, form.get_priority().unwrap());
 
     stream.write(&buffer_envio).unwrap();
 }
@@ -138,41 +104,28 @@ fn calculate_lenght_log(log :&AccountCredentials) -> u8 {
 
 pub fn send_log(stream: &mut TcpStream, log :&AccountCredentials) {
     let lenght = calculate_lenght_log(&log);
-    println!("El tamaño del log es ->{}",lenght);
     let buffer = [Message::Log.into(), lenght];
     stream.write_all(&buffer).unwrap();
     let mut buffer_envio: Vec<u8> = Vec::with_capacity(lenght.into());
 
-    buffer_envio.push(log.get_dni().unwrap().len() as u8);
-    let dni = log.get_dni().unwrap();
-    let dni_bytes = dni.as_bytes();
-    for i in 0..dni_bytes.len(){
-        buffer_envio.push(dni_bytes[i]);
-    }
-
-    buffer_envio.push(log.get_password().unwrap().len() as u8);
-    let password = log.get_password().unwrap();
-    let password_bytes = password.as_bytes();
-    for i in 0..password_bytes.len(){
-        buffer_envio.push(password_bytes[i]);
-    }
+    push_to_buffer(&mut buffer_envio, log.get_dni().unwrap());
+    push_to_buffer(&mut buffer_envio, log.get_password().unwrap());
     stream.write(&buffer_envio).unwrap();
 }
 
 pub fn read_response_from_server(stream: &mut TcpStream) {
-    let mut num_buffer = [0u8; 2]; //Recibimos 2 bytes
-    let _aux = stream.read_exact(&mut num_buffer); //Manejar
+    let mut num_buffer = [0u8; 2];
+    let _aux = stream.read_exact(&mut num_buffer);
     match  Message::from(num_buffer[0]) {
         Message::Nice => {
-            println!("Se loggeo correctamente!");
-            //Lanzar otro menu donde pueda ver cuando le toco el turno, su info y desloggearse.
+            println!("\nSe inició sesión correctamente\n");
             logged_menu(stream);
         }
         Message::Error => {
-            println!("Hubo un error al trata de autentificarse!");
+            println!("\nHubo un error al iniciar sesión\n");
         }
         _ => {
-            println!("Nose que me contesto el server!");
+            println!("\nNo se que me contesto el server!\n");
         }
     }
 }
@@ -190,23 +143,22 @@ fn bytes2string(bytes: &[u8]) -> Result<String, u8> {
 }
 
 pub fn read_date(stream: &mut TcpStream) -> Result<ClientAccount, u8>{
-    let mut num_buffer = [0u8; 2]; //Recibimos 2 bytes
-    let _aux = stream.read_exact(&mut num_buffer); //manejar
+    let mut num_buffer = [0u8; 2];
+    let _aux = stream.read_exact(&mut num_buffer);
     match  Message::from(num_buffer[0]) {
         Message::Appointment => {
             let mut buffer_packet: Vec<u8> = vec![0; num_buffer[1] as usize];
             let _aux = stream.read_exact(&mut buffer_packet);
-            println!("Consulte el turno!");
             let mut _index = 0 as usize;
             let mut _dias: Option<String> = None;
             let days_size: usize = buffer_packet[(_index) as usize] as usize;
             _index += 1 as usize;
             _dias = Some(bytes2string(&buffer_packet[_index..(_index + days_size)])?);
             _index += days_size;
-            println!("El turno es en {} días", _dias.unwrap());
+            println!("\nEl turno es en {} días\n", _dias.unwrap());
         }
         _ => {
-            println!("Nose que me contesto el server!");
+            println!("\nNo se que me contesto el server!\n");
         }
     }
     Err(1)
