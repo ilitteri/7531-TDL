@@ -21,60 +21,52 @@ const OPCION_CONSULT_TURN:i32 = 5;
 fn main() -> Result<(), ()> {
     let argv = args().collect::<Vec<String>>();
     if argv.len()  != CLIENT_ARGS_EXPECTED_LEN {
-        println!("Invalid number of arguments");
+        println!("Número de argumentos inválido");
         let app_name = &argv[0];
         println!("{:?} <host> <port>", app_name);
         return Err(());
     }
     let address = argv[1].clone() + ":" + &argv[2];
-    println!("Connecting to... {:?}", address);
+    println!("Conectando a... {:?}", address);
     client_run(&address).unwrap();
     Ok(())
 }
 
 fn client_run(address: &str) -> std::io::Result<()> {
     let mut stream = TcpStream::connect(address)?;
-    // Aca ya se establecio el canal Tcp
-    //
     loop {
         let mut option_str = String::new();
         println!("Ingresá una opcion:");
-        println!("Ingresa 1 para logearte!");
-        println!("Ingresa 2 para registrarte!");
-        println!("Ingresa 3 para desconectarte!");
+        println!("1) Iniciar Sesión");
+        println!("2) Registrarse");
+        println!("3) Cerrar");
         io::stdin()
             .read_line(&mut option_str)
-            .expect("Failed to read line");
+            .expect("Error al leer la línea");
         let option_string = option_str.trim().to_string();
-        let option_int = option_string.parse::<i32>().expect("Error con el parse");
+        let option_int = option_string.parse::<i32>().expect("Error al parsear");
 
         match option_int {
             OPCION_LOG => {
                 let log = ask_for_log();
                 send_log(&mut stream, &log);
-                println!("Envie mi log!");
-                //Leo la respuesta del server y tomo una decision
                 read_response_from_server(&mut stream);
             }
             OPCION_REGISTER => {
                 let form = ask_for_form();
                 send_register(&mut stream, &form);
-                println!("Envie mi formulario!");
-                //Leo la respuesta del server y tomo una decision
                 read_response_from_server(&mut stream);
             }
             OPCION_DISCONNECT => {
                 send_disconnect(&mut stream);
-                println!("Me desconecte!");
                 break;
             }
             OPCION_SECRETA => {
                 send_shutdown(&mut stream);
-                println!("Me desconecte!");
                 break;
             }
             _ => {
-                println!("Opcion equivocada intente nuevamente!");
+                println!("Opción equivocada intente nuevamente!");
             }
         }
     }
@@ -85,23 +77,23 @@ pub fn logged_menu(stream: &mut TcpStream) {
     loop {
         let mut option_str = String::new();
         println!("Ingresá una opcion:");
-        println!("Ingresa 4 para desloguearse!");
-        println!("Ingresa 5 para consultar turno!");
+        println!("4) Cerrar Sesión");
+        println!("5) Consultar Turno");
         io::stdin()
             .read_line(&mut option_str)
             .expect("Failed to read line");
         let option_string = option_str.trim().to_string();
-        let option_int = option_string.parse::<i32>().expect("Error con el parse");
+        let option_int = option_string.parse::<i32>().expect("Error al parsear");
 
         match option_int {
             OPCION_LOG_OFF => {
-                //
-                println!("Me desconecte!");
+                println!("\nCerrando sesión...");
+                println!("Se cerró sesión correctamente\n");
                 break;
             }
             OPCION_CONSULT_TURN => {
                 send_consult(stream);
-                let _aux = read_date(stream); //Manejar
+                let _aux = read_date(stream);
             }
             _=> {
                 println!("Opcion invalida intente nuevamente!");
