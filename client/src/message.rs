@@ -14,12 +14,14 @@ pub enum Message {
     Nice,
     Error,
     Shutdown,
-    Appointment
+    Appointment,
+    Delete
 }
 
 impl From<u8> for Message {
     fn from(code :u8) -> Message {
         match code & 0xF0 {
+            0x00 => Message::Delete,
             0x10 => Message::Log,
             0x20 => Message::Form,
             0x30 => Message::Disconnect,
@@ -35,6 +37,7 @@ impl From<u8> for Message {
 impl From<Message> for u8 {
     fn from(code: Message) -> u8 {
         match code {
+            Message::Delete => 0x00,
             Message::Log => 0x10,
             Message::Form => 0x20,
             Message::Disconnect =>  0x30,
@@ -132,6 +135,11 @@ pub fn read_response_from_server(stream: &mut TcpStream) {
 
 pub fn send_consult(stream: &mut TcpStream) {
     let buffer = [Message::Appointment.into(), 0_u8];
+    stream.write_all(&buffer).unwrap();
+}
+
+pub fn send_delete(stream: &mut TcpStream) {
+    let buffer = [Message::Delete.into(), 0_u8];
     stream.write_all(&buffer).unwrap();
 }
 

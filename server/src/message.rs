@@ -4,7 +4,7 @@ use std::process::exit;
 use std::sync::{Arc, Mutex};
 
 use crate::client_account::ClientAccount;
-use crate::file_handling::{find_user, write_json};
+use crate::file_handling::{find_user, update_database, write_json};
 use crate::appointments::get_appointment;
 use crate::logging::check_credentials;
 use crate::logging::AccountCredentials;
@@ -19,12 +19,14 @@ pub enum Message {
     Nice,
     Error,
     Shutdown,
-    Appointment
+    Appointment,
+    Delete
 }
 
 impl From<u8> for Message {
     fn from(code :u8) -> Message {
         match code & 0xF0 {
+            0x00 => Message::Delete,
             0x10 => Message::Log,
             0x20 => Message::Form,
             0x30 => Message::Disconnect,
@@ -40,6 +42,7 @@ impl From<u8> for Message {
 impl From<Message> for u8 {
     fn from(code: Message) -> u8 {
         match code {
+            Message::Delete => 0x00,
             Message::Log => 0x10,
             Message::Form => 0x20,
             Message::Disconnect =>  0x30,
@@ -66,8 +69,8 @@ fn read_forms(buffer_packet: Vec<u8>, mutex: &Arc<Mutex<Vec<ClientAccount>>>, dn
     _index += 1 as usize;
     _dni = Some(bytes2string(&buffer_packet[_index..(_index + dni_size)])?);
     _index += dni_size;
-    let aux = _dni.clone().unwrap();
-    *dni_user = aux;
+    let aux_dni = _dni.clone().unwrap();
+    *dni_user = aux_dni;
 
     let mut _password: Option<String> = None;
     let password_size: usize = buffer_packet[(_index) as usize] as usize;
@@ -106,8 +109,9 @@ fn read_forms(buffer_packet: Vec<u8>, mutex: &Arc<Mutex<Vec<ClientAccount>>>, dn
     _index += priority_size;
 
     let client_account = ClientAccount::new(&_name.unwrap(), &_lastname.unwrap(), &_email.unwrap(), &_password.unwrap(), &_birth_date.unwrap(), &_dni.unwrap(), &_priority.unwrap());
+
     mutex.lock().unwrap().push(client_account.clone());
-    let _aux = write_json("client_data", client_account);
+    let _aux = write_json("client_data", client_account); // Seguro por si se cae el server
 
     Ok(1)
 }
@@ -175,6 +179,8 @@ pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message, loc
             stream.shutdown(Shutdown::Both).expect("shutdown call failed");
         }
         Message::Shutdown => {
+            update_database(lock);
+            println!("Se actualizó la base de datos");
             println!("Se procede a apagar el servidor!");
             exit(0);
         }
@@ -185,11 +191,21 @@ pub fn read_message(stream: &mut TcpStream, size: u8, message_type: Message, loc
             send_date(stream, respuesta);
             println!("Envié una consulta de turno");
         }
+        Message::Delete => {
+            println!("Recibí una petición de borrado de cuenta");
+            delete_user(dni_user, lock);
+        }
         _ => {
             println!("Mensaje desconocido");
         }
     }
     Ok(())
+}
+
+pub fn delete_user(dni_user: &mut String, mutex: &Arc<Mutex<Vec<ClientAccount>>>) {
+    let mut vector = mutex.lock().unwrap();
+    let index = vector.iter().position(|x| x.get_dni() == Some(dni_user.clone())).unwrap();
+    vector.remove(index);
 }
 
 pub fn send_date(stream: &mut TcpStream, respuesta: String) {

@@ -3,18 +3,33 @@ use std::path::Path;
 use std::fs;
 use std::sync::{Arc, Mutex};
 use crate::client_account::ClientAccount;
+use crate::server::PATH;
 
 pub enum ReadError{
     MissingDNI,
 }
 
+pub fn update_database(mutex: &Arc<Mutex<Vec<ClientAccount>>>) {
+    match fs::remove_file(PATH) {
+        Ok(..) => {
+            println!("Éxito al eliminar la database!");
+        }
+        _ => {
+            println!("Problema al eliminar la database!");
+        }
+    }
+    let vector = mutex.lock().unwrap();
+    for account in vector.iter(){
+        let _aux = write_json(PATH, account.clone());
+    }
+}
 pub fn write_json(path: &str, form:ClientAccount )  -> Result<(), serde_json::Error> {
     let json_file_path = Path::new(path);
     let display = json_file_path.display();
 
     if json_file_path.exists(){
         let _file = match File::open(&json_file_path) {
-            Err(why) => panic!("La informacion del cliente no pudo ser guardada. Motivo: couldn't open {}: {}", display, why),
+            Err(why) => panic!("La información del cliente no pudo ser guardada. Motivo: couldn't open {}: {}", display, why),
             Ok(_file) => _file,
         };
         let data = fs::read_to_string(path).expect("No se pudo leer el archivo");

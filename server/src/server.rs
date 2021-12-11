@@ -11,7 +11,7 @@ pub struct Server {
     cfg: Configuration,
 }
 
-static PATH: &str = "client_data";
+pub static PATH: &str = "client_data";
 
 impl Server {
     pub fn new(file_path: &str) -> Self {
