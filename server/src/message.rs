@@ -77,6 +77,11 @@ fn read_forms(
     let aux_dni = _dni.clone().unwrap();
     *dni_user = aux_dni;
 
+    if let Ok(_account) = find_user(mutex, _dni.clone().unwrap()) {
+        *dni_user = "-1".to_string();
+        return Err(0);
+    }
+
     let mut _password: Option<String> = None;
     let password_size: usize = buffer_packet[(_index) as usize] as usize;
     _index += 1 as usize;
@@ -198,9 +203,13 @@ pub fn read_message(
         Message::Form => {
             println!("Recibí un formulario");
             let _aux2 = read_forms(buffer_packet, lock, dni_user);
-            println!("Intento enviar que el formulario fue recibido");
-            send_nice_log_message(stream);
-            println!("Se envió que el formulario fue recibido");
+            if dni_user.as_str() != "-1" {
+                send_nice_log_message(stream);
+                println!("Se registro adecuadamente en la base de datos!");
+            } else {
+                send_error_log_message(stream);
+                println!("Dni ya utilizado!");
+            }
         }
         Message::Unknown => {
             println!("No reconozco este mensaje");

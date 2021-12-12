@@ -125,7 +125,7 @@ pub fn read_response_from_server(stream: &mut TcpStream) {
             logged_menu(stream);
         }
         Message::Error => {
-            println!("\nHubo un error al iniciar sesión\n");
+            println!("\nHubo un error al iniciar sesión y/o registrarse!\n");
         }
         _ => {
             println!("\nNo se que me contesto el server!\n");
