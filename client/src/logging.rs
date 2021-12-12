@@ -33,7 +33,11 @@ pub fn ask_for_log() -> AccountCredentials {
         .read_line(&mut password)
         .expect("Error al leer la linea");
 
-    let client_account = AccountCredentials::new(_dni.trim(), password.trim());
+
+    let client_account = AccountCredentials::new(
+        _dni.trim(),
+        password.trim(),
+    );
 
     return client_account;
 }
