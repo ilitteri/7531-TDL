@@ -1,27 +1,30 @@
-mod message;
 mod client_account;
 mod form;
 mod logging;
+mod message;
 
-use std::io;
-use std::env::args;
-use std::net::TcpStream;
 use crate::form::ask_for_form;
 use crate::logging::ask_for_log;
-use crate::message::{read_date, read_response_from_server, send_consult, send_delete, send_disconnect, send_log, send_register, send_shutdown};
+use crate::message::{
+    read_date, read_response_from_server, send_consult, send_delete, send_disconnect, send_log,
+    send_register, send_shutdown,
+};
+use std::env::args;
+use std::io;
+use std::net::TcpStream;
 
 static CLIENT_ARGS_EXPECTED_LEN: usize = 3;
-const OPCION_LOG:i32 = 1;
-const OPCION_REGISTER:i32 = 2;
-const OPCION_DISCONNECT:i32 = 3;
-const OPCION_SECRETA:i32 = 79;
-const OPCION_LOG_OFF:i32 = 4;
-const OPCION_CONSULT_TURN:i32 = 5;
-const OPCION_DELETE:i32 = 6;
+const OPCION_LOG: i32 = 1;
+const OPCION_REGISTER: i32 = 2;
+const OPCION_DISCONNECT: i32 = 3;
+const OPCION_SECRETA: i32 = 79;
+const OPCION_LOG_OFF: i32 = 4;
+const OPCION_CONSULT_TURN: i32 = 5;
+const OPCION_DELETE: i32 = 6;
 
 fn main() -> Result<(), ()> {
     let argv = args().collect::<Vec<String>>();
-    if argv.len()  != CLIENT_ARGS_EXPECTED_LEN {
+    if argv.len() != CLIENT_ARGS_EXPECTED_LEN {
         println!("Número de argumentos inválido");
         let app_name = &argv[0];
         println!("{:?} <host> <port>", app_name);
@@ -103,10 +106,9 @@ pub fn logged_menu(stream: &mut TcpStream) {
                 println!("Se eliminó correctamente la cuenta\n");
                 break;
             }
-            _=> {
+            _ => {
                 println!("Opcion invalida intente nuevamente!");
             }
         }
     }
-
 }

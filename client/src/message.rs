@@ -1,8 +1,8 @@
-use std::io::{Read, Write};
-use std::net::TcpStream;
 use crate::client_account::ClientAccount;
 use crate::logged_menu;
 use crate::logging::AccountCredentials;
+use std::io::{Read, Write};
+use std::net::TcpStream;
 
 const ERROR: u8 = 1;
 
@@ -15,11 +15,11 @@ pub enum Message {
     Error,
     Shutdown,
     Appointment,
-    Delete
+    Delete,
 }
 
 impl From<u8> for Message {
-    fn from(code :u8) -> Message {
+    fn from(code: u8) -> Message {
         match code & 0xF0 {
             0x00 => Message::Delete,
             0x10 => Message::Log,
@@ -29,7 +29,7 @@ impl From<u8> for Message {
             0x50 => Message::Error,
             0x60 => Message::Shutdown,
             0x70 => Message::Appointment,
-            _=> Message::Unknown
+            _ => Message::Unknown,
         }
     }
 }
@@ -40,12 +40,12 @@ impl From<Message> for u8 {
             Message::Delete => 0x00,
             Message::Log => 0x10,
             Message::Form => 0x20,
-            Message::Disconnect =>  0x30,
+            Message::Disconnect => 0x30,
             Message::Nice => 0x40,
             Message::Error => 0x50,
             Message::Shutdown => 0x60,
             Message::Appointment => 0x70,
-            _ => 0x99
+            _ => 0x99,
         }
     }
 }
@@ -60,8 +60,8 @@ pub fn send_shutdown(stream: &mut TcpStream) {
     stream.write_all(&buffer).unwrap();
 }
 
-fn calculate_lenght(form :&ClientAccount) -> u8 {
-    let mut lenght:u8 = 0;
+fn calculate_lenght(form: &ClientAccount) -> u8 {
+    let mut lenght: u8 = 0;
     lenght += (form.get_dni().unwrap().len() + 1) as u8;
     lenght += (form.get_lastname().unwrap().len() + 1) as u8;
     lenght += (form.get_birth_date().unwrap().len() + 1) as u8;
@@ -69,19 +69,19 @@ fn calculate_lenght(form :&ClientAccount) -> u8 {
     lenght += (form.get_email().unwrap().len() + 1) as u8;
     lenght += (form.get_name().unwrap().len() + 1) as u8;
     lenght += (form.get_priority().unwrap().len() + 1) as u8;
-    
+
     return lenght;
 }
 
 fn push_to_buffer(buffer: &mut Vec<u8>, data: String) {
     buffer.push(data.len() as u8);
     let data_bytes = data.as_bytes();
-    for i in 0..data_bytes.len(){
+    for i in 0..data_bytes.len() {
         buffer.push(data_bytes[i]);
     }
 }
 
-pub fn send_register(stream: &mut TcpStream, form :&ClientAccount) {
+pub fn send_register(stream: &mut TcpStream, form: &ClientAccount) {
     let lenght = calculate_lenght(&form);
     let buffer = [Message::Form.into(), lenght];
     stream.write_all(&buffer).unwrap();
@@ -98,14 +98,14 @@ pub fn send_register(stream: &mut TcpStream, form :&ClientAccount) {
     stream.write(&buffer_envio).unwrap();
 }
 
-fn calculate_lenght_log(log :&AccountCredentials) -> u8 {
-    let mut lenght:u8 = 0;
+fn calculate_lenght_log(log: &AccountCredentials) -> u8 {
+    let mut lenght: u8 = 0;
     lenght += (log.get_dni().unwrap().len() + 1) as u8;
     lenght += (log.get_password().unwrap().len() + 1) as u8;
     return lenght;
 }
 
-pub fn send_log(stream: &mut TcpStream, log :&AccountCredentials) {
+pub fn send_log(stream: &mut TcpStream, log: &AccountCredentials) {
     let lenght = calculate_lenght_log(&log);
     let buffer = [Message::Log.into(), lenght];
     stream.write_all(&buffer).unwrap();
@@ -119,7 +119,7 @@ pub fn send_log(stream: &mut TcpStream, log :&AccountCredentials) {
 pub fn read_response_from_server(stream: &mut TcpStream) {
     let mut num_buffer = [0u8; 2];
     let _aux = stream.read_exact(&mut num_buffer);
-    match  Message::from(num_buffer[0]) {
+    match Message::from(num_buffer[0]) {
         Message::Nice => {
             println!("\nSe inició sesión correctamente\n");
             logged_menu(stream);
@@ -146,14 +146,14 @@ pub fn send_delete(stream: &mut TcpStream) {
 fn bytes2string(bytes: &[u8]) -> Result<String, u8> {
     match std::str::from_utf8(bytes) {
         Ok(str) => Ok(str.to_owned()),
-        Err(_) => Err(ERROR)
+        Err(_) => Err(ERROR),
     }
 }
 
-pub fn read_date(stream: &mut TcpStream) -> Result<ClientAccount, u8>{
+pub fn read_date(stream: &mut TcpStream) -> Result<ClientAccount, u8> {
     let mut num_buffer = [0u8; 2];
     let _aux = stream.read_exact(&mut num_buffer);
-    match  Message::from(num_buffer[0]) {
+    match Message::from(num_buffer[0]) {
         Message::Appointment => {
             let mut buffer_packet: Vec<u8> = vec![0; num_buffer[1] as usize];
             let _aux = stream.read_exact(&mut buffer_packet);
