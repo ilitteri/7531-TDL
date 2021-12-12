@@ -4,7 +4,7 @@ const ERROR: u8 = 1;
 #[derive(Debug)]
 pub struct AccountCredentials {
     pub dni: Option<String>,
-    pub password: Option<String>
+    pub password: Option<String>,
 }
 
 impl AccountCredentials {
@@ -16,8 +16,11 @@ impl AccountCredentials {
     }
 }
 
-pub fn check_credentials(form: AccountCredentials, acc: ClientAccount) -> Result<ClientAccount, u8>{
-    if acc.password == form.password{
+pub fn check_credentials(
+    form: AccountCredentials,
+    acc: ClientAccount,
+) -> Result<ClientAccount, u8> {
+    if acc.password == form.password {
         return Ok(acc);
     }
     return Err(ERROR);

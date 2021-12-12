@@ -1,13 +1,13 @@
-use std::env::args;
 use crate::server::Server;
+use std::env::args;
 
-mod server;
-mod configuration;
-mod message;
-mod file_handling;
-mod client_account;
-mod logging;
 mod appointments;
+mod client_account;
+mod configuration;
+mod file_handling;
+mod logging;
+mod message;
+mod server;
 
 static SERVER_ARGS: usize = 2;
 

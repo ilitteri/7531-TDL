@@ -20,16 +20,16 @@ impl PartialEq for ClientAccount {
     }
 }
 
-impl Eq for ClientAccount { }
+impl Eq for ClientAccount {}
 
-pub fn get_appointment(dni: &str, mutex: &Arc<Mutex<Vec<ClientAccount>>>) -> String{
+pub fn get_appointment(dni: &str, mutex: &Arc<Mutex<Vec<ClientAccount>>>) -> String {
     let mut clients = mutex.lock().unwrap();
-    let mut indice:i16 = -1;
+    let mut indice: i16 = -1;
     let mut contador = 0;
     clients.sort();
 
-    for account in clients.iter(){
-        if account.get_dni() == Some(dni.to_string().clone()){
+    for account in clients.iter() {
+        if account.get_dni() == Some(dni.to_string().clone()) {
             indice = contador;
             break;
         }

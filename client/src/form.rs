@@ -1,14 +1,14 @@
-use std::io;
 use crate::client_account::ClientAccount;
+use std::io;
 
-const YES:&str = "y";
-const NO:&str = "n";
-const RISK_AGE:i32 = 60;
-const HIGH_PRIORITY:i32=1;
-const MIDDLE_PRIORITY:i32=2;
-const LOW_PRIORITY:i32=3;
+const YES: &str = "y";
+const NO: &str = "n";
+const RISK_AGE: i32 = 60;
+const HIGH_PRIORITY: i32 = 1;
+const MIDDLE_PRIORITY: i32 = 2;
+const LOW_PRIORITY: i32 = 3;
 
-const LEN_DNI:i32 = 8;
+const LEN_DNI: i32 = 8;
 
 pub fn ask_for_form() -> ClientAccount {
     let mut name = String::new();
@@ -43,7 +43,6 @@ pub fn ask_for_form() -> ClientAccount {
         .read_line(&mut birth_date)
         .expect("Failed to read line");
 
-    
     let _dni = ask_for_dni();
     let priority = ask_for_priority();
 
@@ -60,7 +59,6 @@ pub fn ask_for_form() -> ClientAccount {
     return client_account;
 }
 
-
 pub fn ask_for_priority() -> String {
     let mut option_str = String::new();
 
@@ -72,54 +70,52 @@ pub fn ask_for_priority() -> String {
     let age = age_string.parse::<i32>().expect("Error con el parse");
 
     let mut answer = String::new();
-    while &answer != YES && &answer != NO{
+    while &answer != YES && &answer != NO {
         answer = String::new();
         println!("¿Tiene o tuvo patologias asociadas a un mayor riesgo de enfermarse gravemente por COVID-19?");
         println!("Ingrese 'y' si la respuesta es afirmativa o 'n' si la respuesta es no");
         io::stdin()
             .read_line(&mut answer)
             .expect("Failed to read line");
-        answer= answer.trim().to_string();
+        answer = answer.trim().to_string();
     }
-    
+
     return set_priority(age, set_pathologies(answer));
 }
 
-fn set_pathologies (has_pathologies: String)-> bool{
-    let mut pathologies=false;
-    if &has_pathologies == YES{
-        pathologies=true;
+fn set_pathologies(has_pathologies: String) -> bool {
+    let mut pathologies = false;
+    if &has_pathologies == YES {
+        pathologies = true;
     }
     return pathologies;
 }
 
-
-fn set_priority(age: i32, has_pathologies:bool) -> String{
+fn set_priority(age: i32, has_pathologies: bool) -> String {
     let mut priority = LOW_PRIORITY;
-    if age >=RISK_AGE && has_pathologies {
+    if age >= RISK_AGE && has_pathologies {
         priority = HIGH_PRIORITY;
-    }
-    else if (age >=RISK_AGE && !has_pathologies) || (age < RISK_AGE && has_pathologies) {
+    } else if (age >= RISK_AGE && !has_pathologies) || (age < RISK_AGE && has_pathologies) {
         priority = MIDDLE_PRIORITY;
     }
 
     return priority.to_string();
 }
 
-pub fn ask_for_dni() -> String{
+pub fn ask_for_dni() -> String {
     let mut answer = String::new();
     println!("Ingresa tu DNI:");
     io::stdin()
         .read_line(&mut answer)
         .expect("Error al leer la linea");
-    answer= answer.trim().to_string();
-    while answer.len() != LEN_DNI as usize{
+    answer = answer.trim().to_string();
+    while answer.len() != LEN_DNI as usize {
         answer = String::new();
         println!("Ingrese un DNI valido por favor: ");
-            io::stdin()
-                .read_line(&mut answer)
-                .expect("Error al leer la linea");
-            answer= answer.trim().to_string();
-        }
+        io::stdin()
+            .read_line(&mut answer)
+            .expect("Error al leer la linea");
+        answer = answer.trim().to_string();
+    }
     return answer;
 }

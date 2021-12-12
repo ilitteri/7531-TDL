@@ -1,25 +1,23 @@
-use std::io::Read;
-use std::net::{SocketAddr, TcpListener, TcpStream};
-use std::sync::{Arc, Mutex};
-use std::thread;
 use crate::client_account::ClientAccount;
 use crate::configuration::Configuration;
 use crate::file_handling::get_accounts;
 use crate::message::read_message;
+use std::io::Read;
+use std::net::{SocketAddr, TcpListener, TcpStream};
+use std::sync::{Arc, Mutex};
+use std::thread;
 
 pub struct Server {
     cfg: Configuration,
 }
 
-static PATH: &str = "client_data";
+pub static PATH: &str = "client_data";
 
 impl Server {
     pub fn new(file_path: &str) -> Self {
         let mut config = Configuration::new();
         let _aux = config.set_config(file_path);
-        Server {
-            cfg: config,
-        }
+        Server { cfg: config }
     }
 
     pub fn run(&self) -> std::io::Result<()> {
@@ -38,16 +36,19 @@ impl Server {
             let listener = TcpListener::bind(&address)?;
             let connection: (TcpStream, SocketAddr) = listener.accept()?;
             let mut client_stream = connection.0;
-            thread::Builder::new().name("Client-Listener".into()).spawn(move || {
-                println!("Se lanzo un cliente!.");
-                handle_client(index, &mut client_stream, &mutex_clone);
-            }).unwrap();
+            thread::Builder::new()
+                .name("Client-Listener".into())
+                .spawn(move || {
+                    println!("Se lanzo un cliente!.");
+                    handle_client(index, &mut client_stream, &mutex_clone);
+                })
+                .unwrap();
             index += 1;
         }
     }
 }
 
-fn handle_client(_id :usize, stream: &mut TcpStream, lock: &Arc<Mutex<Vec<ClientAccount>>>) {
+fn handle_client(_id: usize, stream: &mut TcpStream, lock: &Arc<Mutex<Vec<ClientAccount>>>) {
     let mut stream_cloned = stream.try_clone().unwrap();
     read_packet_from_client(&mut stream_cloned, lock);
 }
