@@ -8,6 +8,8 @@ Trabajo Práctico Grupal de TDL (75.31)
 * **Ezequiel Vilardo** - [EzequielVF](https://github.com/EzequielVF)
 * **Iván Litteri** - [ilitteri](https://github.com/ilitteri)
 
+<img src= "https://drive.google.com/uc?id=13RQ-RE0VnQrS9z8YcTGLNwHK_oQy3k32" width="50%">
+
 Corrector: **Ferrigno**
 
 # Usando el sistema
