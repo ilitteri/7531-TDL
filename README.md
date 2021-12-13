@@ -7,17 +7,17 @@ Trabajo Práctico Grupal de TDL (75.31)
 
 ### Por SSH
 ```bash
-git clone git@github.com:algoritmos-iii/algo3-discord-bot.git
+git clone git@github.com:ilitteri/7531-TDL.git
 ```
 
 ### Por HTTPS
 ```bash
-git clone https://github.com/algoritmos-iii/algo3-discord-bot.git
+git clone https://github.com/ilitteri/7531-TDL.git
 ```
 
 ### Por GitHub CLI
 ```bash
-gh repo clone algoritmos-iii/algo3-discord-bot
+gh repo clone ilitteri/7531-TDL
 ```
 
 Para lo que sigue se requiere instancia de consolas distintas (una por cada parte a ejecutar, para la experiencia completa mínimo dos, una para el servidor y otra para el cliente).
