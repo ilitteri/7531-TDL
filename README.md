@@ -1,6 +1,15 @@
 # 7531-TDL
 Trabajo Práctico Grupal de TDL (75.31)
 
+## Grupo: Rejunte de Desgracias
+
+* **Nicolas Pinto** - [nicopinto22](https://github.com/nicopinto22)
+* **Agustina Bocaccio** - [agusbocaccio](https://github.com/agusbocaccio)
+* **Ezequiel Vilardo** - [EzequielVF](https://github.com/EzequielVF)
+* **Iván Litteri** - [ilitteri](https://github.com/ilitteri)
+
+Corrector: **Ferrigno**
+
 # Usando el sistema
 
 ## Clone el repositorio
